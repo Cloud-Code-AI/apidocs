@@ -1,6 +1,7 @@
 import openai
 from config import settings
 
+
 class AIEngine:
     def __init__(self):
         openai.api_key = settings.OPENAI_API_KEY
@@ -10,7 +11,7 @@ class AIEngine:
         response = await openai.Completion.acreate(
             engine="text-davinci-002",
             prompt=f"Generate detailed documentation for this API specification:\n{api_spec}",
-            max_tokens=500
+            max_tokens=500,
         )
         return response.choices[0].text.strip()
 
@@ -19,7 +20,7 @@ class AIEngine:
         response = await openai.Completion.acreate(
             engine="text-davinci-002",
             prompt=f"Generate test cases for this API endpoint:\n{endpoint_info}",
-            max_tokens=300
+            max_tokens=300,
         )
         return response.choices[0].text.strip()
 
@@ -28,6 +29,6 @@ class AIEngine:
         response = await openai.Completion.acreate(
             engine="text-davinci-002",
             prompt=f"Interpret this API-related query and provide a response:\n{query}",
-            max_tokens=200
+            max_tokens=200,
         )
         return response.choices[0].text.strip()

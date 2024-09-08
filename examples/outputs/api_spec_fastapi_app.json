@@ -1,0 +1,45 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Generated API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/items/{item_id}": {
+      "get": {
+        "summary": "Fastapi route in main.py",
+        "description": "Automatically detected fastapi route",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/items": {
+      "post": {
+        "summary": "Fastapi route in main.py",
+        "description": "Automatically detected fastapi route",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/calculate": {
+      "get": {
+        "summary": "Fastapi route in main.py",
+        "description": "Automatically detected fastapi route",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  }
+}

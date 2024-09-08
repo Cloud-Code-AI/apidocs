@@ -13,20 +13,26 @@ class SecurityAnalyzer:
             for method, details in methods.items():
                 endpoint_security = details.get("security", [])
                 if not endpoint_security:
-                    security_issues.append(f"No security defined for {method.upper()} {path}")
+                    security_issues.append(
+                        f"No security defined for {method.upper()} {path}"
+                    )
 
                 # Check for proper input validation
                 parameters = details.get("parameters", [])
                 for param in parameters:
                     if "schema" not in param:
-                        security_issues.append(f"No schema defined for parameter {param['name']} in {method.upper()} {path}")
+                        security_issues.append(
+                            f"No schema defined for parameter {param['name']} in {method.upper()} {path}"
+                        )
 
                 # Check for rate limiting headers
                 responses = details.get("responses", {})
                 for response in responses.values():
                     headers = response.get("headers", {})
                     if "X-RateLimit-Limit" not in headers:
-                        security_issues.append(f"No rate limiting headers for {method.upper()} {path}")
+                        security_issues.append(
+                            f"No rate limiting headers for {method.upper()} {path}"
+                        )
                         break
 
         # Check for HTTPS usage
@@ -43,5 +49,5 @@ class SecurityAnalyzer:
                 "Validate and sanitize all input data",
                 "Use parameterized queries to prevent SQL injection",
                 "Implement proper error handling to avoid information leakage",
-            ]
+            ],
         }

@@ -1,5 +1,6 @@
 from app.ai_engine import AIEngine
 
+
 class TestCaseGenerator:
     def __init__(self, ai_engine: AIEngine):
         self.ai_engine = ai_engine
@@ -19,11 +20,11 @@ class TestCaseGenerator:
         prompt += "Parameters:\n"
         for param in parameters:
             prompt += f"- {param['name']} ({param['in']}): {param.get('description', 'N/A')}\n"
-        
+
         if request_body:
             prompt += "Request Body:\n"
             prompt += str(request_body) + "\n"
-        
+
         prompt += "Responses:\n"
         for status, response in responses.items():
             prompt += f"- {status}: {response.get('description', 'N/A')}\n"
