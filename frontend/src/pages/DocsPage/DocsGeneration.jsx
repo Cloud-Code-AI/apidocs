@@ -1,25 +1,299 @@
-import { useState } from 'react'
-import { Header } from "./header"
-import { Specification } from "./specification"
-import { Documentation } from "./documentation"
-import { ApiUsage } from "./apiUsage"
+import { useState, useEffect } from 'react'
+import { Header } from './header'
+import { Specification } from './specification'
+import { Documentation } from './documentation'
+import { ApiUsage } from './apiUsage'
+
+// Sample OpenAPI specification
+const sampleSpec = {
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Enhanced Planets API",
+    "version": "1.1.0",
+    "description": "An API for retrieving and managing information about planets"
+  },
+  "servers": [
+    {
+      "url": "http://api.example.com/v1"
+    }
+  ],
+  "paths": {
+    "/planets": {
+      "get": {
+        "summary": "List planets",
+        "description": "Retrieve a list of planets, with optional filtering",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Filter planets by type",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["terrestrial", "gas giant", "ice giant", "dwarf"]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of planets to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Planet"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new planet",
+        "description": "Add a new planet to the database",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPlanet"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Planet created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Planet"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/planets/{id}": {
+      "get": {
+        "summary": "Get a specific planet",
+        "description": "Retrieve details of a specific planet by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "include-moons",
+            "in": "query",
+            "description": "Include detailed moon information",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Planet"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Planet not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update a planet",
+        "description": "Modify details of an existing planet",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanetUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Planet updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Planet"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Planet not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Planet": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["terrestrial", "gas giant", "ice giant", "dwarf"]
+          },
+          "moons": {
+            "type": "integer"
+          },
+          "hasRings": {
+            "type": "boolean"
+          }
+        },
+        "required": ["id", "name", "type"]
+      },
+      "NewPlanet": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["terrestrial", "gas giant", "ice giant", "dwarf"]
+          },
+          "moons": {
+            "type": "integer"
+          },
+          "hasRings": {
+            "type": "boolean"
+          }
+        },
+        "required": ["name", "type"]
+      },
+      "PlanetUpdate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "moons": {
+            "type": "integer"
+          },
+          "hasRings": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    }
+  }
+}
 
 function DocsGeneration() {
-  const [specification, setSpecification] = useState('')
+  const [spec, setSpec] = useState(JSON.stringify(sampleSpec, null, 2))
+  const [parsedSpec, setParsedSpec] = useState(sampleSpec)
+
+  const handleSpecificationChange = (newSpec) => {
+    setSpec(newSpec)
+    try {
+      const parsed = JSON.parse(newSpec)
+      console.log(parsed)
+      setParsedSpec(parsed)
+    } catch (error) {
+      console.error('Failed to parse specification:', error)
+      setParsedSpec(null)
+    }
+  }
+
+  useEffect(() => {
+    // Initialize with sample data
+    handleSpecificationChange(spec)
+  }, [])
 
   return (
     <div className="w-full">
       <Header />
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-6">
-          <Specification
-            specification={specification} 
-            setSpecification={setSpecification} 
+          <Specification 
+            specification={spec} 
+            setSpecification={handleSpecificationChange} 
           />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Documentation />
-          <ApiUsage />
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="lg:w-[65%]">
+            {parsedSpec ? (
+              <Documentation apiSpec={parsedSpec} />
+            ) : (
+              <p>Enter a valid OpenAPI specification to generate documentation.</p>
+            )}
+          </div>
+          <div className="lg:w-[35%]">
+            <ApiUsage apiSpec={parsedSpec} />
+          </div>
         </div>
       </main>
     </div>
