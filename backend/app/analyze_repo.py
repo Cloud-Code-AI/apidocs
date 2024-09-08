@@ -126,7 +126,6 @@ class CodebaseAnalyzer:
                                         )
         elif framework == "fastapi":
             for node in ast.walk(tree):
-                print(node)
                 if isinstance(node, ast.FunctionDef) or isinstance(
                     node, ast.AsyncFunctionDef
                 ):
@@ -156,7 +155,6 @@ class CodebaseAnalyzer:
         self, file_path: str, framework: str, routes: List[Dict[str, Any]]
     ):
         for route_info in routes:
-            print(route_info)
             method, path = route_info["method"], route_info["route"]
             data = {
                 "method": method,
@@ -164,8 +162,6 @@ class CodebaseAnalyzer:
                 "path": path,
             }
             schema, usage = self.ai_engine.generate_api_spec(data)
-            print(schema)
-            print(data, "\n-----\n")
             path = path.replace("int", "")
             path = path.replace("str", "")
             path = path.replace(":", "")

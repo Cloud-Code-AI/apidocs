@@ -1,20 +1,29 @@
-from fastapi import APIRouter, Depends
-from backend.app.ai_engine import AIEngine
+from fastapi import APIRouter, Body
 from backend.app.analyze_repo import CodebaseAnalyzer
-from backend.app.test_case_generator import TestCaseGenerator
-from backend.app.security_analyzer import SecurityAnalyzer
-from backend.app.performance_analyzer import PerformanceAnalyzer
-
+from pydantic import BaseModel
+import json
 router = APIRouter()
 
+class DocumentationRequest(BaseModel):
+    url: str
 
 @router.post("/generate_documentation")
 async def generate_documentation(
-    url: str,
+    request: DocumentationRequest = Body(...)
 ):
-    analyzer = CodebaseAnalyzer(url)
-    api_spec = await analyzer.analyze()
+    url = request.url.replace(".git", "")
+    analyzer = CodebaseAnalyzer(repo_path=url)
+    api_spec = analyzer.analyze()
+    file_name = request.url.split("/")[-1].replace('.git', '').replace('/', '_') + '.json'
+    with open("static/" + file_name, "w") as f:
+        json.dump(api_spec, f, indent=4)
     return {"api_spec": api_spec}
+
+
+@router.get("/github-webhook")
+async def get_documentation(file_name: str):
+    pass
+    
 
 
 # @router.post("/generate_test_cases")
