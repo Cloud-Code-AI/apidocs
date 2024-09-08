@@ -3,6 +3,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ClipboardIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 const generateJavaScriptCode = (method, path, parameters, requestBody) => {
   const url = `http://api.example.com/v1${path}`;
@@ -92,85 +94,93 @@ export function ApiUsage({ apiSpec }) {
   const [activeTab, setActiveTab] = useState('javascript');
 
   return (
-    <div className="border border-border p-6 rounded-lg shadow-sm">
-      <h2 className="text-2xl font-semibold mb-4">API Usage</h2>
+    <div className="space-y-6">
       {Object.entries(paths).map(([path, methods]) => 
         Object.entries(methods).map(([method, details]) => (
-          <div key={`${method}-${path}`} className="mb-6">
-            <h3 className="text-xl font-semibold mb-2">{details.summary}</h3>
-            <p className="text-muted-foreground mb-2">{method.toUpperCase()} {path}</p>
-            <Tabs defaultValue="javascript" onValueChange={setActiveTab}>
-              <div className="flex justify-between items-center mb-2">
-                <TabsList>
-                  <TabsTrigger value="javascript">JavaScript</TabsTrigger>
-                  <TabsTrigger value="python">Python</TabsTrigger>
-                  <TabsTrigger value="curl">cURL</TabsTrigger>
-                </TabsList>
-                <CopyButton 
-                  text={
-                    activeTab === 'javascript'
-                      ? generateJavaScriptCode(method, path, details.parameters, details.requestBody)
-                      : activeTab === 'python'
-                      ? generatePythonCode(method, path, details.parameters, details.requestBody)
-                      : generateCurlCode(method, path, details.parameters, details.requestBody)
-                  } 
-                />
+          <Card key={`${method}-${path}`} className="shadow-md">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl">{details.summary}</CardTitle>
+                <Badge variant="outline" className="text-sm font-medium">
+                  {method.toUpperCase()}
+                </Badge>
               </div>
-              <div className="max-w-full">
-                <TabsContent value="javascript">
-                  <SyntaxHighlighter 
-                    language="javascript" 
-                    style={prism} 
-                    customStyle={{
-                      borderRadius: '0.5rem',
-                      fontSize: '0.875rem',
-                      padding: '1rem',
-                      backgroundColor: 'rgb(246, 248, 250)', // Light gray background
-                    }}
-                    wrapLines={true}
-                    wrapLongLines={true}
-                    lineProps={{style: {wordBreak: 'break-all', whiteSpace: 'pre-wrap'}}}
-                  >
-                    {generateJavaScriptCode(method, path, details.parameters, details.requestBody)}
-                  </SyntaxHighlighter>
-                </TabsContent>
-                <TabsContent value="python">
-                  <SyntaxHighlighter 
-                    language="python" 
-                    style={prism} 
-                    customStyle={{
-                      borderRadius: '0.5rem',
-                      fontSize: '0.875rem',
-                      padding: '1rem',
-                      backgroundColor: 'rgb(246, 248, 250)', // Light gray background
-                    }}
-                    wrapLines={true}
-                    wrapLongLines={true}
-                    lineProps={{style: {wordBreak: 'break-all', whiteSpace: 'pre-wrap'}}}
-                  >
-                    {generatePythonCode(method, path, details.parameters, details.requestBody)}
-                  </SyntaxHighlighter>
-                </TabsContent>
-                <TabsContent value="curl">
-                  <SyntaxHighlighter 
-                    language="bash" 
-                    style={prism} 
-                    customStyle={{
-                      borderRadius: '0.5rem',
-                      fontSize: '0.875rem',
-                      padding: '1rem',
-                      backgroundColor: 'rgb(246, 248, 250)', // Light gray background
-                    }}
-                    wrapLines={true}
-                    wrapLongLines={true}
-                    lineProps={{style: {wordBreak: 'break-all', whiteSpace: 'pre-wrap'}}}
-                  >
-                    {generateCurlCode(method, path, details.parameters, details.requestBody)}
-                  </SyntaxHighlighter>
-                </TabsContent>
-              </div>
-            </Tabs>
-          </div>
+              <p className="text-muted-foreground text-sm">{path}</p>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="javascript" onValueChange={setActiveTab}>
+                <div className="flex justify-between items-center mb-2">
+                  <TabsList className="grid grid-cols-3 w-[300px]">
+                    <TabsTrigger value="javascript">JavaScript</TabsTrigger>
+                    <TabsTrigger value="python">Python</TabsTrigger>
+                    <TabsTrigger value="curl">cURL</TabsTrigger>
+                  </TabsList>
+                  <CopyButton 
+                    text={
+                      activeTab === 'javascript'
+                        ? generateJavaScriptCode(method, path, details.parameters, details.requestBody)
+                        : activeTab === 'python'
+                        ? generatePythonCode(method, path, details.parameters, details.requestBody)
+                        : generateCurlCode(method, path, details.parameters, details.requestBody)
+                    } 
+                  />
+                </div>
+                <div className="max-w-full mt-4">
+                  <TabsContent value="javascript">
+                    <SyntaxHighlighter 
+                      language="javascript" 
+                      style={prism} 
+                      customStyle={{
+                        borderRadius: '0.5rem',
+                        fontSize: '0.875rem',
+                        padding: '1rem',
+                        backgroundColor: 'rgb(246, 248, 250)', // Light gray background
+                      }}
+                      wrapLines={true}
+                      wrapLongLines={true}
+                      lineProps={{style: {wordBreak: 'break-all', whiteSpace: 'pre-wrap'}}}
+                    >
+                      {generateJavaScriptCode(method, path, details.parameters, details.requestBody)}
+                    </SyntaxHighlighter>
+                  </TabsContent>
+                  <TabsContent value="python">
+                    <SyntaxHighlighter 
+                      language="python" 
+                      style={prism} 
+                      customStyle={{
+                        borderRadius: '0.5rem',
+                        fontSize: '0.875rem',
+                        padding: '1rem',
+                        backgroundColor: 'rgb(246, 248, 250)', // Light gray background
+                      }}
+                      wrapLines={true}
+                      wrapLongLines={true}
+                      lineProps={{style: {wordBreak: 'break-all', whiteSpace: 'pre-wrap'}}}
+                    >
+                      {generatePythonCode(method, path, details.parameters, details.requestBody)}
+                    </SyntaxHighlighter>
+                  </TabsContent>
+                  <TabsContent value="curl">
+                    <SyntaxHighlighter 
+                      language="bash" 
+                      style={prism} 
+                      customStyle={{
+                        borderRadius: '0.5rem',
+                        fontSize: '0.875rem',
+                        padding: '1rem',
+                        backgroundColor: 'rgb(246, 248, 250)', // Light gray background
+                      }}
+                      wrapLines={true}
+                      wrapLongLines={true}
+                      lineProps={{style: {wordBreak: 'break-all', whiteSpace: 'pre-wrap'}}}
+                    >
+                      {generateCurlCode(method, path, details.parameters, details.requestBody)}
+                    </SyntaxHighlighter>
+                  </TabsContent>
+                </div>
+              </Tabs>
+            </CardContent>
+          </Card>
         ))
       )}
     </div>
