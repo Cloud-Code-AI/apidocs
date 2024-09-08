@@ -6,8 +6,8 @@ import { prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-const generateJavaScriptCode = (method, path, parameters, requestBody) => {
-  const url = `http://api.example.com/v1${path}`;
+const generateJavaScriptCode = (server, method, path, parameters, requestBody) => {
+  const url = `${server.url}/${path}`;
   const queryParams = parameters?.filter(p => p.in === 'query').map(p => `${p.name}=${p.schema.default || '{value}'}`).join('&');
   const fullUrl = queryParams ? `${url}?${queryParams}` : url;
   
@@ -31,8 +31,8 @@ const generateJavaScriptCode = (method, path, parameters, requestBody) => {
   return code;
 };
 
-const generatePythonCode = (method, path, parameters, requestBody) => {
-  const url = `http://api.example.com/v1${path}`;
+const generatePythonCode = (server, method, path, parameters, requestBody) => {
+  const url = `${server.url}/${path}`;
   const queryParams = parameters?.filter(p => p.in === 'query').map(p => `'${p.name}': ${p.schema.default || "'{value}'"}`).join(', ');
   
   let code = `import requests
@@ -51,8 +51,8 @@ print(response.json())`;
   return code;
 };
 
-const generateCurlCode = (method, path, parameters, requestBody) => {
-  const url = `http://api.example.com/v1${path}`;
+const generateCurlCode = (server, method, path, parameters, requestBody) => {
+  const url = `${server.url}/${path}`;
   const queryParams = parameters?.filter(p => p.in === 'query').map(p => `${p.name}=${p.schema.default || '{value}'}`).join('&');
   const fullUrl = queryParams ? `${url}?${queryParams}` : url;
   
@@ -90,7 +90,7 @@ const CopyButton = ({ text }) => {
 };
 
 export function ApiUsage({ apiSpec }) {
-  const { paths } = apiSpec;
+  const { servers, paths } = apiSpec;
   const [activeTab, setActiveTab] = useState('javascript');
 
   return (
@@ -109,10 +109,10 @@ export function ApiUsage({ apiSpec }) {
                   <CopyButton 
                     text={
                       activeTab === 'javascript'
-                        ? generateJavaScriptCode(method, path, details.parameters, details.requestBody)
+                        ? generateJavaScriptCode(servers[0], method, path, details.parameters, details.requestBody)
                         : activeTab === 'python'
-                        ? generatePythonCode(method, path, details.parameters, details.requestBody)
-                        : generateCurlCode(method, path, details.parameters, details.requestBody)
+                        ? generatePythonCode(servers[0], method, path, details.parameters, details.requestBody)
+                        : generateCurlCode(servers[0], method, path, details.parameters, details.requestBody)
                     } 
                   />
                 </div>
@@ -131,7 +131,7 @@ export function ApiUsage({ apiSpec }) {
                       wrapLongLines={true}
                       lineProps={{style: {wordBreak: 'break-all', whiteSpace: 'pre-wrap'}}}
                     >
-                      {generateJavaScriptCode(method, path, details.parameters, details.requestBody)}
+                      {generateJavaScriptCode(servers[0], method, path, details.parameters, details.requestBody)}
                     </SyntaxHighlighter>
                   </TabsContent>
                   <TabsContent value="python">
@@ -148,7 +148,7 @@ export function ApiUsage({ apiSpec }) {
                       wrapLongLines={true}
                       lineProps={{style: {wordBreak: 'break-all', whiteSpace: 'pre-wrap'}}}
                     >
-                      {generatePythonCode(method, path, details.parameters, details.requestBody)}
+                      {generatePythonCode(servers[0], method, path, details.parameters, details.requestBody)}
                     </SyntaxHighlighter>
                   </TabsContent>
                   <TabsContent value="curl">
@@ -165,7 +165,7 @@ export function ApiUsage({ apiSpec }) {
                       wrapLongLines={true}
                       lineProps={{style: {wordBreak: 'break-all', whiteSpace: 'pre-wrap'}}}
                     >
-                      {generateCurlCode(method, path, details.parameters, details.requestBody)}
+                      {generateCurlCode(servers[0], method, path, details.parameters, details.requestBody)}
                     </SyntaxHighlighter>
                   </TabsContent>
                 </div>

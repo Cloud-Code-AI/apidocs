@@ -92,7 +92,7 @@ const Parameter = ({ param }) => {
   );
 };
 
-const EndpointSection = ({ method, path, summary, description, parameters, requestBody, security }) => (
+const EndpointSection = ({ method, servers, path, summary, description, parameters, requestBody, security }) => (
   <section className="mb-8 flex flex-col lg:flex-row gap-6">
     <div className="lg:w-[70%] border border-gray-200 rounded-lg overflow-hidden">
       <div className="bg-gray-50 p-4 border-b border-gray-200">
@@ -135,13 +135,13 @@ const EndpointSection = ({ method, path, summary, description, parameters, reque
       )}
     </div>
     <div className="lg:w-[30%]">
-      <ApiUsage apiSpec={{ paths: { [path]: { [method]: { parameters, requestBody } } } }} />
+      <ApiUsage apiSpec={{ servers: servers, paths: { [path]: { [method]: { parameters, requestBody } } } }} />
     </div>
   </section>
 );
 
 export function Documentation({ apiSpec }) {
-  const { info, paths, components } = apiSpec;
+  const { info, servers, paths, components } = apiSpec;
   const [activeTab, setActiveTab] = useState('formatted');
 
   const FormattedDocs = () => (
@@ -150,6 +150,7 @@ export function Documentation({ apiSpec }) {
         Object.entries(methods).map(([method, details]) => (
           <EndpointSection 
             key={`${method}-${path}`}
+            servers={servers}
             method={method}
             path={path}
             {...details}

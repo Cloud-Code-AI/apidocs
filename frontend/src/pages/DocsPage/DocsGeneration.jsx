@@ -260,7 +260,6 @@ function DocsGeneration() {
     setSpec(newSpec)
     try {
       const parsed = JSON.parse(newSpec)
-      console.log(parsed)
       setParsedSpec(parsed)
     } catch (error) {
       console.error('Failed to parse specification:', error)
