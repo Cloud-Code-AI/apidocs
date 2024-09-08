@@ -45,6 +45,13 @@ Follow these steps to get AkiraDocs up and running using Docker:
 
 To learn more about AkiraDocs and its capabilities, check out our [Canva presentation](https://www.canva.com/design/DAGQMyFpKk0/RwVSBQKXL1v2lLKg7rNOwA/view?utm_content=DAGQMyFpKk0&utm_campaign=designshare&utm_medium=link&utm_source=editor).
 
+## Screenshots
+
+<img width="1512" alt="BeforeGeneration" src="https://github.com/user-attachments/assets/5eaef512-cda7-4773-ae15-f69d79ba3c1c">
+
+<img width="1512" alt="GeneratedAPI" src="https://github.com/user-attachments/assets/7840b6a3-dc6e-4322-b861-235086d7305b">
+
+
 ## License
 
 AkiraDocs is released under the [MIT License](LICENSE).
