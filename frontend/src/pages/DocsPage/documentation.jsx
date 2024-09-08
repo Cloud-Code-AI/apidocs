@@ -111,7 +111,7 @@ const Parameter = ({ param }) => {
 };
 
 const EndpointSection = ({ id, method, servers, path, summary, description, parameters, requestBody, security, isProd, insights, ...rest }) => {
-  const filteredParameters = parameters?.filter(param => param.name || param.description || param.required) || [];
+  const filteredParameters = parameters?.filter(param => param.name || param.description || param.required);
   
   const filteredRequestBodyProperties = requestBody?.content?.['application/json']?.schema?.properties
     ? Object.entries(requestBody.content['application/json'].schema.properties)
@@ -354,6 +354,10 @@ export function Documentation({ apiSpec, activeEndpoint, isProd, onSpecUpdate })
       {error && <p className="text-red-500 text-sm">{error}</p>}
     </div>
   ), [isEditing, error, apiSpec]);
+
+  if (!apiSpec || !apiSpec.paths) {
+    return null; // Return null if there's no data to display
+  }
 
   return (
     <div className="h-full overflow-y-auto pt-6">

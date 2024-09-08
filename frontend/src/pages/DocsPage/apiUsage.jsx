@@ -111,6 +111,10 @@ const ParameterToggle = ({ param, isIncluded, onToggle }) => (
 );
 
 export function ApiUsage({ apiSpec }) {
+  if (!apiSpec || !apiSpec.servers || !apiSpec.paths) {
+    return null; // Return null if there's no data to display
+  }
+
   const { servers, paths } = apiSpec;
   const [activeTab, setActiveTab] = useState('javascript');
   const [includedParams, setIncludedParams] = useState({});

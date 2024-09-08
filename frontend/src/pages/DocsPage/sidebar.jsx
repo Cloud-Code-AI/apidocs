@@ -47,6 +47,10 @@ export function Sidebar({ apiSpec, onEndpointClick }) {
   };
 
   const renderEndpoints = () => {
+    if (!apiSpec || !apiSpec.paths) {
+      return null; // Return null if there's no data to display
+    }
+
     return Object.entries(apiSpec.paths).map(([path, methods]) => (
       <li key={path} className="mb-1">
         <div
@@ -85,6 +89,14 @@ export function Sidebar({ apiSpec, onEndpointClick }) {
       </li>
     ));
   };
+
+  if (!apiSpec || !apiSpec.info) {
+    return (
+      <div className="w-56 bg-white border-r border-gray-200 px-2 py-4 overflow-y-auto shadow-sm">
+        <p className="text-sm text-gray-500 p-2">No API specification loaded</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-56 bg-white border-r border-gray-200 px-2 py-4 overflow-y-auto shadow-sm">
