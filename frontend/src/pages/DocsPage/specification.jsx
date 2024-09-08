@@ -8,7 +8,7 @@ export function Specification({ specification, setSpecification }) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    setSpecification(url)
+    setSpecification({ url, isProd })
     // Here you would typically fetch the specification from the GitHub URL
   }
 
