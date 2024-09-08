@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "akiradocs"
+version = "0.1.0"
+description = "AI powered API Docs and Testing"
+authors = ["Saurav Panda <sgp65@cornell.edu>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+kaizen-cloudcode = "^0.4.9"
+pygithub = "^2.4.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
