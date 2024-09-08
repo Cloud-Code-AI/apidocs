@@ -37,17 +37,9 @@ Follow these steps to get AkiraDocs up and running using Docker:
    docker-compose down
    ```
 
-## Documentation
-
-For more detailed information about using AkiraDocs, please refer to our [official documentation](https://docs.akiradocs.com).
-
 ## Presentation
 
-To learn more about AkiraDocs and its capabilities, check out our [Canva presentation](https://www.canva.com/design/DAFxyz123/view).
-
-## Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for more details on how to get involved.
+To learn more about AkiraDocs and its capabilities, check out our [Canva presentation](https://www.canva.com/design/DAGQMyFpKk0/RwVSBQKXL1v2lLKg7rNOwA/view?utm_content=DAGQMyFpKk0&utm_campaign=designshare&utm_medium=link&utm_source=editor).
 
 ## License
 
