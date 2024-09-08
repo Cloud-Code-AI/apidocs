@@ -97,7 +97,7 @@ export function ApiUsage({ apiSpec }) {
     <div className="space-y-6">
       {Object.entries(paths).map(([path, methods]) => 
         Object.entries(methods).map(([method, details]) => (
-          <Card key={`${method}-${path}`} className="shadow-md">
+          <Card key={`${method}-${path}`} className="shadow-sm">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl">{details.summary}</CardTitle>
