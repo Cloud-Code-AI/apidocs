@@ -184,7 +184,7 @@ export function Documentation({ apiSpec }) {
   );
 
   return (
-    <div className="h-full border border-border p-6 rounded-lg shadow-sm overflow-y-auto">
+    <div className="h-full overflow-y-auto">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-4">
           <TabsTrigger value="formatted">Formatted Documentation</TabsTrigger>
