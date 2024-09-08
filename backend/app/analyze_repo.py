@@ -102,7 +102,8 @@ class CodebaseAnalyzer:
                                     for keyword in decorator.keywords:
                                         if keyword.arg == "methods":
                                             methods = [m.s for m in keyword.value.elts]
-                                routes.append({"route": route, "methods": methods, "function_name": node.name, "node": node})
+                                    for method in methods:
+                                        routes.append({"route": route, "method": method, "function_name": node.name, "node": node})
         elif framework == "fastapi":
             for node in ast.walk(tree):
                 print(node)
@@ -133,6 +134,8 @@ class CodebaseAnalyzer:
             schema, usage = self.ai_engine.generate_api_spec(data)
             print(schema)
             print(data, "\n-----\n")
+            path = path.replace('<int:', '{').replace('>', '}')
+        
             if "paths" in schema:
                 self.api_spec["paths"].setdefault(path, {})[method.lower()] = schema["paths"][path][method.lower()]
             elif path in schema:

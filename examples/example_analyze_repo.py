@@ -29,7 +29,7 @@ def main():
     # print("\n" + "="*50 + "\n")
 
     # Example with a local path
-    local_path = "sample_repos/fastapi_app"
+    local_path = "sample_repos/flask_app"
     analyze_and_print(local_path)
 
 
