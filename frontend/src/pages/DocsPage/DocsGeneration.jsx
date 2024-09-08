@@ -17,10 +17,12 @@ function DocsGeneration() {
 
     try {
       const response = await fetch(`https://api.akiradocs.com/static/${repoName}.json`)
+      console.log(response)
       if (!response.ok) {
         throw new Error('Failed to load specification')
       }
       const data = await response.json()
+      console.log(data)
       setParsedSpec(data)
     } catch (error) {
       console.error('Failed to load specification:', error)

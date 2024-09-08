@@ -2,6 +2,8 @@ from fastapi import APIRouter, Body
 from backend.app.analyze_repo import CodebaseAnalyzer
 from pydantic import BaseModel
 import json
+from fastapi import FastAPI, Request, BackgroundTasks, HTTPException
+from fastapi.responses import JSONResponse
 router = APIRouter()
 
 class DocumentationRequest(BaseModel):
@@ -20,10 +22,16 @@ async def generate_documentation(
     return {"api_spec": api_spec}
 
 
-@router.get("/github-webhook")
-async def get_documentation(file_name: str):
-    pass
-    
+@router.post("/github-webhook")
+async def handle_webhook(request: Request, background_tasks: BackgroundTasks):
+    payload = await request.json()
+    body = await request.body()
+    event = request.headers.get("X-GitHub-Event", "missing_event")
+    if event == "pull_request":
+        repo_name = payload["repository"]["full_name"]
+        background_tasks.add_task(process_updates, f'https://github.com/{repo_name}')
+
+    return JSONResponse(content={"message": "Webhook received"})
 
 
 # @router.post("/generate_test_cases")

@@ -33,4 +33,4 @@ EXPOSE 8000
 ENV NAME World
 
 # Run main.py when the container launches
-CMD ["poetry", "run", "python", "backend/main.py"]
+CMD ["poetry", "run", "uvicorn", "backend.main.app", "--host", "0.0.0.0", "--port", "8000"]
