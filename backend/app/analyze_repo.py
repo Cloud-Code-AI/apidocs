@@ -22,7 +22,7 @@ class CodebaseAnalyzer:
             "info": {"title": "Generated API", "version": "1.0.0"},
             "paths": {},
             "components": {"schemas": {}},
-            "servers": [{"url": "https://api.example.com"}]
+            "servers": [{"url": "https://api.example.com"}],
         }
         self.is_github_url = repo_path.startswith("https://github.com/")
         self.ai_engine = AIEngine()
@@ -90,34 +90,61 @@ class CodebaseAnalyzer:
                 return framework
         return "Unknown"
 
-    def _extract_routes(self, file_content: str, framework: str) -> List[Dict[str, Any]]:
+    def _extract_routes(
+        self, file_content: str, framework: str
+    ) -> List[Dict[str, Any]]:
         routes = []
         tree = ast.parse(file_content)
-        
+
         if framework == "flask":
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef):
                     for decorator in node.decorator_list:
-                        if isinstance(decorator, ast.Call) and isinstance(decorator.func, ast.Attribute):
-                            if decorator.func.attr == 'route':
+                        if isinstance(decorator, ast.Call) and isinstance(
+                            decorator.func, ast.Attribute
+                        ):
+                            if decorator.func.attr == "route":
                                 route = decorator.args[0].s
-                                methods = ["GET", "POST", "PUT", "DELETE"]  # Default method
+                                methods = [
+                                    "GET",
+                                    "POST",
+                                    "PUT",
+                                    "DELETE",
+                                ]  # Default method
                                 if len(decorator.keywords) > 0:
                                     for keyword in decorator.keywords:
                                         if keyword.arg == "methods":
                                             methods = [m.s for m in keyword.value.elts]
                                     for method in methods:
-                                        routes.append({"route": route, "method": method, "function_name": node.name, "node": node})
+                                        routes.append(
+                                            {
+                                                "route": route,
+                                                "method": method,
+                                                "function_name": node.name,
+                                                "node": node,
+                                            }
+                                        )
         elif framework == "fastapi":
             for node in ast.walk(tree):
                 print(node)
-                if isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef):
+                if isinstance(node, ast.FunctionDef) or isinstance(
+                    node, ast.AsyncFunctionDef
+                ):
                     for decorator in node.decorator_list:
-                        if isinstance(decorator, ast.Call) and isinstance(decorator.func, ast.Attribute):
-                            if decorator.func.attr in ['get', 'post', 'put', 'delete']:
+                        if isinstance(decorator, ast.Call) and isinstance(
+                            decorator.func, ast.Attribute
+                        ):
+                            if decorator.func.attr in ["get", "post", "put", "delete"]:
                                 route = decorator.args[0].s
                                 method = decorator.func.attr
-                                routes.append({"route": route, "method": method, "function_name": node.name, "node": node})
+                                routes.append(
+                                    {
+                                        "route": route,
+                                        "method": method,
+                                        "function_name": node.name,
+                                        "node": node,
+                                    }
+                                )
         # Add similar logic for other frameworks
 
         return routes
@@ -125,31 +152,36 @@ class CodebaseAnalyzer:
     def _extract_function_content(self, node: ast.FunctionDef) -> str:
         return ast.unparse(node)
 
-    def _add_to_api_spec(self, file_path: str, framework: str, routes: List[Dict[str, Any]]):
-        relative_path = os.path.relpath(file_path, self.root_dir)
+    def _add_to_api_spec(
+        self, file_path: str, framework: str, routes: List[Dict[str, Any]]
+    ):
         for route_info in routes:
             print(route_info)
             method, path = route_info["method"], route_info["route"]
             data = {
                 "method": method,
                 "content": ast.unparse(route_info["node"]),
-                "path": path
+                "path": path,
             }
             schema, usage = self.ai_engine.generate_api_spec(data)
             print(schema)
             print(data, "\n-----\n")
-            path = path.replace('int', '')
-            path = path.replace('str', '')
-            path = path.replace(':', '')
-            path = path.replace('<', '{').replace('>', '}')
-            path = path.replace('<path:', '{').replace('>', '}')
+            path = path.replace("int", "")
+            path = path.replace("str", "")
+            path = path.replace(":", "")
+            path = path.replace("<", "{").replace(">", "}")
+            path = path.replace("<path:", "{").replace(">", "}")
             insights, usage = self.ai_engine.generate_insights(schema)
             if "paths" in schema:
                 schema["paths"][path][method.lower()]["insights"] = insights
-                self.api_spec["paths"].setdefault(path, {})[method.lower()] = schema["paths"][path][method.lower()]
+                self.api_spec["paths"].setdefault(path, {})[method.lower()] = schema[
+                    "paths"
+                ][path][method.lower()]
             elif path in schema:
                 schema[path][method.lower()]["insights"] = insights
-                self.api_spec["paths"].setdefault(path, {})[method.lower()] = schema[path][method.lower()]
+                self.api_spec["paths"].setdefault(path, {})[method.lower()] = schema[
+                    path
+                ][method.lower()]
 
     def _process_class(self, node: ast.ClassDef, file_path: str):
         class_name = node.name
@@ -164,7 +196,7 @@ class CodebaseAnalyzer:
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_path] = module
         spec.loader.exec_module(module)
-    
+
         class_obj = getattr(module, class_name)
 
         if hasattr(class_obj, "router"):  # FastAPI router

@@ -1,6 +1,7 @@
 from kaizen.llms.provider import LLMProvider
 import json
 
+
 class AIEngine:
     def __init__(self):
         self.llm_provider = LLMProvider()

@@ -14,6 +14,7 @@ def load_language(language: str):
     parser = get_parser(language=language)
     return parser
 
+
 class ParserFactory:
     @staticmethod
     @lru_cache(maxsize=None)
@@ -78,6 +79,7 @@ def parse_code(code: str, language: str) -> Dict[str, Any]:
         logger.error(f"Failed to parse {language} code: {str(e)}")
         raise
 
+
 def check_language_files():
     required_languages = ["python", "javascript", "typescript", "rust"]
     missing_languages = []
@@ -94,6 +96,7 @@ def check_language_files():
         )
     else:
         logger.info("All required language files are present and loaded successfully.")
+
 
 # Call this function at the start of your application
 check_language_files()
