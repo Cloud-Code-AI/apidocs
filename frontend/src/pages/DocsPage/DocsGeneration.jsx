@@ -16,7 +16,7 @@ function DocsGeneration() {
     setError(null)
 
     try {
-      const response = await fetch(`/static/${repoName}.json`)
+      const response = await fetch(`https://api.akiradocs.com/static/${repoName}.json`)
       if (!response.ok) {
         throw new Error('Failed to load specification')
       }
