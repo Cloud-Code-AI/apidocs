@@ -14,7 +14,7 @@ export function Specification({ onSpecificationGenerated, isProd }) {
     setError(null)
 
     try {
-      const response = await fetch('/document_generation', {
+      const response = await fetch('http://api.akiradocs.com/api/document_generation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
