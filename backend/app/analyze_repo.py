@@ -5,12 +5,14 @@ from typing import List, Dict, Any
 import importlib
 import sys
 import tempfile
+import re
 from github import Github
 from github import GithubException
 
 class CodebaseAnalyzer:
-    def __init__(self, repo_url: str, github_token: str = None):
-        self.repo_url = repo_url
+    def __init__(self, repo_path: str, github_token: str = None):
+        self.repo_path = repo_path
+        self.root_dir = repo_path
         self.github_token = github_token
         self.api_spec = {
             "openapi": "3.0.0",
@@ -23,20 +25,26 @@ class CodebaseAnalyzer:
                 "schemas": {}
             }
         }
+        self.is_github_url = repo_path.startswith("https://github.com/")
 
     def analyze(self) -> Dict[str, Any]:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            self._clone_repo(tmp_dir)
-            self._process_directory(tmp_dir)
+        if self.is_github_url:
+            with tempfile.TemporaryDirectory() as tmp_dir:
+                self._clone_repo(tmp_dir)
+                self._process_directory(tmp_dir)
+        else:
+            self._process_directory(self.repo_path)
         return self.api_spec
 
     def _clone_repo(self, tmp_dir: str):
+        if not self.is_github_url:
+            return
+
         g = Github(self.github_token)
         try:
-            repo_name = self.repo_url.split('/')[-2:]
+            repo_name = self.repo_path.split('/')[-2:]
             repo_name = '/'.join(repo_name)
             repo = g.get_repo(repo_name)
-            repo.clone_url
             os.system(f"git clone {repo.clone_url} {tmp_dir}")
         except GithubException as e:
             print(f"Error cloning repository: {e}")
@@ -51,11 +59,66 @@ class CodebaseAnalyzer:
 
     def _process_file(self, file_path: str):
         with open(file_path, 'r') as file:
-            tree = ast.parse(file.read())
+            content = file.read()
+            tree = ast.parse(content)
+
+        framework = self._identify_framework(content)
+        routes = self._extract_routes(content, framework)
+
+        if framework != 'Unknown' or routes:
+            self._add_to_api_spec(file_path, framework, routes)
 
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 self._process_class(node, file_path)
+
+    def _identify_framework(self, file_content: str) -> str:
+        frameworks = {
+            'flask': r'from\s+flask\s+import',
+            'django': r'from\s+django\s+import',
+            'fastapi': r'from\s+fastapi\s+import',
+            'express': r'express\(\s*\)',
+            'react': r'import\s+React',
+            'angular': r'@angular/core',
+            'vue': r'new\s+Vue\('
+        }
+
+        for framework, pattern in frameworks.items():
+            if re.search(pattern, file_content):
+                return framework
+        return 'Unknown'
+
+    def _extract_routes(self, file_content: str, framework: str) -> List[str]:
+        routes = []
+        if framework == 'flask':
+            routes = re.findall(r'@app.route\([\'"](.+?)[\'"]\)', file_content)
+        elif framework == 'django':
+            routes = re.findall(r'path\([\'"](.+?)[\'"]\s*,', file_content)
+        elif framework == 'fastapi':
+            routes = re.findall(r'@app\.(get|post|put|delete)\([\'"](.+?)[\'"]\)', file_content)
+        elif framework == 'express':
+            routes = re.findall(r'app\.(get|post|put|delete)\([\'"](.+?)[\'"]\s*,', file_content)
+        elif framework in ['react', 'angular', 'vue']:
+            routes = re.findall(r'(axios|fetch)\([\'"](.+?)[\'"]\)', file_content)
+        return routes
+
+    def _add_to_api_spec(self, file_path: str, framework: str, routes: List[str]):
+        relative_path = os.path.relpath(file_path, self.root_dir)
+        for route in routes:
+            if isinstance(route, tuple):
+                method, path = route
+            else:
+                method, path = 'get', route
+
+            self.api_spec['paths'].setdefault(path, {})[method.lower()] = {
+                'summary': f'{framework.capitalize()} route in {relative_path}',
+                'description': f'Automatically detected {framework} route',
+                'responses': {
+                    '200': {
+                        'description': 'Successful Response'
+                    }
+                }
+            }
 
     def _process_class(self, node: ast.ClassDef, file_path: str):
         class_name = node.name
