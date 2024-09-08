@@ -21,3 +21,31 @@ Return the result as a valid JSON string representing the complete OpenAPI 3.1 s
 
         response, usage = self.llm_provider.chat_completion_with_json(prompt=prompt)
         return response, usage
+
+    def generate_insights(self, api_spec):
+        prompt = f"""Analyze the following API specification for the path and method provided:
+
+{json.dumps(api_spec, indent=2)}
+
+Generate a detailed report with insights on performance, security, optimization, and general API design. Provide the output in standard JSON format with the following structure:
+Keep all the feedback related to API spec and dont provide unnecessary feedback.
+
+{{
+  "performance_insights": [
+    // List of performance-related insights and recommendations
+  ],
+  "security_insights": [
+    // List of security-related insights and recommendations
+  ],
+  "optimization_insights": [
+    // List of optimization-related insights and recommendations
+  ],
+  "additional_metadata": {{
+    // Any additional metadata useful for developers
+  }}
+  }}
+
+Ensure that all insights are specific to the given path and method, and provide actionable recommendations where applicable."""
+
+        response, usage = self.llm_provider.chat_completion_with_json(prompt=prompt)
+        return response, usage

@@ -22,6 +22,7 @@ class CodebaseAnalyzer:
             "info": {"title": "Generated API", "version": "1.0.0"},
             "paths": {},
             "components": {"schemas": {}},
+            "servers": [{"url": "https://api.example.com"}]
         }
         self.is_github_url = repo_path.startswith("https://github.com/")
         self.ai_engine = AIEngine()
@@ -68,7 +69,10 @@ class CodebaseAnalyzer:
 
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
-                self._process_class(node, file_path)
+                try:
+                    self._process_class(node, file_path)
+                except Exception as e:
+                    print(f"Error processing class: {e}")
 
     def _identify_framework(self, file_content: str) -> str:
         frameworks = {
@@ -134,11 +138,17 @@ class CodebaseAnalyzer:
             schema, usage = self.ai_engine.generate_api_spec(data)
             print(schema)
             print(data, "\n-----\n")
-            path = path.replace('<int:', '{').replace('>', '}')
-        
+            path = path.replace('int', '')
+            path = path.replace('str', '')
+            path = path.replace(':', '')
+            path = path.replace('<', '{').replace('>', '}')
+            path = path.replace('<path:', '{').replace('>', '}')
+            insights, usage = self.ai_engine.generate_insights(schema)
             if "paths" in schema:
+                schema["paths"][path][method.lower()]["insights"] = insights
                 self.api_spec["paths"].setdefault(path, {})[method.lower()] = schema["paths"][path][method.lower()]
             elif path in schema:
+                schema[path][method.lower()]["insights"] = insights
                 self.api_spec["paths"].setdefault(path, {})[method.lower()] = schema[path][method.lower()]
 
     def _process_class(self, node: ast.ClassDef, file_path: str):
@@ -154,7 +164,7 @@ class CodebaseAnalyzer:
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_path] = module
         spec.loader.exec_module(module)
-
+    
         class_obj = getattr(module, class_name)
 
         if hasattr(class_obj, "router"):  # FastAPI router

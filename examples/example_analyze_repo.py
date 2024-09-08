@@ -23,14 +23,14 @@ def analyze_and_print(repo_path, github_token=None):
 
 def main():
     # Example with a GitHub URL
-    # github_url = "https://github.com/tiangolo/fastapi"
-    # analyze_and_print(github_url)
+    github_url = "https://github.com/sauravpanda/fastapi-blog"
+    analyze_and_print(github_url)
 
     # print("\n" + "="*50 + "\n")
 
     # Example with a local path
-    local_path = "sample_repos/flask_app"
-    analyze_and_print(local_path)
+    # local_path = "sample_repos/flask_app"
+    # analyze_and_print(local_path)
 
 
 if __name__ == "__main__":
