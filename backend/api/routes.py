@@ -4,6 +4,7 @@ from pydantic import BaseModel
 import json
 from fastapi import FastAPI, Request, BackgroundTasks, HTTPException
 from fastapi.responses import JSONResponse
+from backend.api.help import process_updates
 router = APIRouter()
 
 class DocumentationRequest(BaseModel):

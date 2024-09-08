@@ -1,0 +1,847 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Generated API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/about": {
+      "get": {
+        "summary": "Retrieve About Page",
+        "description": "This endpoint returns the HTML content for the About page of the application. It provides information about the application, its purpose, and other relevant details. The response is rendered using a template and includes any necessary context data.",
+        "operationId": "getAboutPage",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response containing the About page HTML content.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<html><head><title>About Us</title></head><body><h1>About Our Application</h1><p>This application is designed to...</p></body></html>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "An unexpected error occurred."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "About"
+        ],
+        "deprecated": false,
+        "security": [],
+        "insights": {
+          "performance_insights": [
+            "Consider implementing caching mechanisms for the About page content to reduce server load and improve response times for repeat requests.",
+            "Monitor the response time for this endpoint, especially during peak usage, to identify any potential bottlenecks in rendering the HTML content."
+          ],
+          "security_insights": [
+            "Ensure that the endpoint is protected against common web vulnerabilities such as XSS (Cross-Site Scripting) by sanitizing any dynamic content included in the HTML response.",
+            "Implement rate limiting to prevent abuse of the endpoint, especially if the content is sensitive or if it could be targeted for scraping."
+          ],
+          "optimization_insights": [
+            "Since the response is static HTML, consider serving it via a Content Delivery Network (CDN) to enhance delivery speed and reduce latency for users across different geographical locations.",
+            "If the About page content is unlikely to change frequently, consider pre-rendering the HTML and serving it as a static file to improve performance."
+          ],
+          "additional_metadata": {
+            "operationId": "getAboutPage",
+            "tags": [
+              "About"
+            ],
+            "deprecated": false,
+            "response_codes": {
+              "200": "Successful response containing the About page HTML content.",
+              "500": "Internal Server Error"
+            },
+            "example_response": "<html><head><title>About Us</title></head><body><h1>About Our Application</h1><p>This application is designed to...</p></body></html>"
+          }
+        }
+      }
+    },
+    "/contact": {
+      "get": {
+        "summary": "Get Contact Page",
+        "description": "Retrieves the contact page, returning an HTML response with the necessary context for rendering the page.",
+        "operationId": "getContactPage",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response with the contact page HTML.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<html><body><h1>Contact Us</h1><p>Please reach out to us at contact@example.com</p></body></html>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "An unexpected error occurred."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Contact"
+        ],
+        "deprecated": false,
+        "insights": {
+          "performance_insights": [
+            "Consider implementing caching mechanisms for the contact page response to reduce server load and improve response times for repeated requests.",
+            "Evaluate the size of the HTML response and optimize it by minimizing unnecessary tags or inline styles to enhance loading speed."
+          ],
+          "security_insights": [
+            "Ensure that the server is configured to prevent cross-site scripting (XSS) attacks, especially since HTML content is being returned.",
+            "Implement rate limiting to protect the endpoint from abuse and potential denial-of-service (DoS) attacks.",
+            "Consider adding Content Security Policy (CSP) headers to mitigate risks associated with content injection."
+          ],
+          "optimization_insights": [
+            "If the contact page content is static or changes infrequently, consider serving it via a Content Delivery Network (CDN) to reduce latency.",
+            "Review the HTML response for opportunities to use minification techniques to reduce the size of the response payload.",
+            "Explore the possibility of using a more structured response format (e.g., JSON) for the contact page data, which can be more easily consumed by client-side applications."
+          ],
+          "additional_metadata": {
+            "api_version": "1.0.0",
+            "last_updated": "2023-10-01",
+            "contact_email": "support@example.com",
+            "documentation_url": "https://api.example.com/docs/contact"
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Retrieve Home Page",
+        "description": "This endpoint returns the home page of the application. It renders the 'home.html' template with the context obtained from the request. The context may include various data necessary for rendering the page.",
+        "operationId": "getHomePage",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response with the rendered HTML of the home page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<!DOCTYPE html><html><head><title>Home</title></head><body><h1>Welcome to the Home Page</h1></body></html>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error when rendering the home page.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Home"
+        ],
+        "insights": {
+          "performance_insights": [
+            "Consider implementing caching mechanisms for the home page response to reduce server load and improve response times for repeated requests.",
+            "Evaluate the size of the HTML response and optimize it by minimizing unnecessary whitespace and comments to enhance loading speed.",
+            "Monitor the rendering time of the 'home.html' template to identify any bottlenecks in the server-side processing."
+          ],
+          "security_insights": [
+            "Ensure that the server is configured to prevent cross-site scripting (XSS) vulnerabilities by sanitizing any dynamic content that may be included in the HTML response.",
+            "Implement rate limiting to prevent abuse of the home page endpoint, which could lead to denial-of-service attacks.",
+            "Consider using HTTPS to encrypt the data in transit, protecting against man-in-the-middle attacks."
+          ],
+          "optimization_insights": [
+            "If the context data for rendering the home page is static or changes infrequently, consider pre-rendering the HTML to serve it directly without server-side processing.",
+            "Analyze the response size and optimize images or other assets included in the home page to reduce loading times.",
+            "Use a Content Delivery Network (CDN) to serve static assets, which can improve load times for users across different geographical locations."
+          ],
+          "additional_metadata": {
+            "api_version": "1.0.0",
+            "last_updated": "2023-10-01",
+            "contact": {
+              "name": "API Support",
+              "email": "support@example.com"
+            },
+            "documentation_url": "https://api.example.com/docs"
+          }
+        }
+      }
+    },
+    "/index": {
+      "get": {
+        "summary": "Render Home Page",
+        "description": "This endpoint renders the home page of the application. It retrieves the context for the page and returns an HTML response using the specified template.",
+        "operationId": "getIndex",
+        "responses": {
+          "200": {
+            "description": "Successful response with the rendered HTML page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<html><head><title>Home</title></head><body><h1>Welcome to the Home Page</h1></body></html>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Internal server error occurred."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "tags": [
+          "Home"
+        ],
+        "insights": {
+          "performance_insights": [
+            "Consider implementing caching mechanisms for the rendered HTML response to reduce server load and improve response times for frequently accessed pages.",
+            "Evaluate the use of a Content Delivery Network (CDN) to serve static assets (like CSS and JavaScript) alongside the HTML response to enhance loading speed."
+          ],
+          "security_insights": [
+            "Ensure that the server is configured to prevent Cross-Site Scripting (XSS) attacks by sanitizing any user-generated content that might be included in the HTML response.",
+            "Implement rate limiting on the endpoint to mitigate potential Denial of Service (DoS) attacks."
+          ],
+          "optimization_insights": [
+            "Consider using HTTP/2 to improve the performance of the API by allowing multiplexing of requests and reducing latency.",
+            "Optimize the HTML response by minimizing the size of the HTML content, such as removing unnecessary whitespace and comments, to improve loading times."
+          ],
+          "additional_metadata": {
+            "api_version": "1.0.0",
+            "last_updated": "2023-10-01",
+            "contact": {
+              "name": "API Support",
+              "email": "support@example.com"
+            },
+            "documentation_url": "https://example.com/api/docs"
+          }
+        }
+      }
+    },
+    "/posts/{page}": {
+      "get": {
+        "summary": "Retrieve paginated blog posts",
+        "description": "Fetch a list of blog posts for a specific page. Each page contains a limited number of posts, defined by `items_per_page`. The default number of posts per page is 3.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "description": "The page number to retrieve, starting from 0.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response containing the rendered HTML of the posts page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<html><body><h1>Posts</h1><div>Post 1</div><div>Post 2</div><div>Post 3</div></body></html>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Page not found.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<html><body><h1>404 Not Found</h1><p>The requested page does not exist.</p></body></html>"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Posts"
+        ],
+        "insights": {
+          "performance_insights": [
+            "Consider implementing caching mechanisms for the responses to reduce server load and improve response times, especially for frequently accessed pages.",
+            "Evaluate the average size of the HTML content returned. If the size is large, consider implementing compression (e.g., Gzip) to reduce the payload size and improve load times.",
+            "Monitor the response times for different page requests to identify any bottlenecks, especially if the number of posts increases in the future."
+          ],
+          "security_insights": [
+            "Ensure that the API is protected against common web vulnerabilities such as Cross-Site Scripting (XSS) and Cross-Site Request Forgery (CSRF). Validate and sanitize any user-generated content before rendering it in HTML.",
+            "Implement rate limiting to prevent abuse of the API, especially if the endpoint is publicly accessible. This can help mitigate denial-of-service attacks.",
+            "Consider using HTTPS to encrypt data in transit, protecting user data and API responses from eavesdropping."
+          ],
+          "optimization_insights": [
+            "Evaluate the pagination strategy. If the number of posts grows significantly, consider implementing a more efficient pagination method (e.g., cursor-based pagination) to improve performance.",
+            "Allow clients to specify the number of items per page through a query parameter instead of hardcoding it to a default value. This can enhance flexibility and user experience.",
+            "Optimize the HTML rendering process to ensure that the server can handle multiple concurrent requests efficiently, especially during peak usage times."
+          ],
+          "additional_metadata": {
+            "api_version": "1.0.0",
+            "default_items_per_page": 3,
+            "pagination_start": "0",
+            "tags": [
+              "Posts"
+            ],
+            "example_response": {
+              "200": "<html><body><h1>Posts</h1><div>Post 1</div><div>Post 2</div><div>Post 3</div></body></html>",
+              "404": "<html><body><h1>404 Not Found</h1><p>The requested page does not exist.</p></body></html>"
+            }
+          }
+        }
+      }
+    },
+    "/post": {
+      "get": {
+        "summary": "Retrieve a single post",
+        "description": "Fetches a single post from the database and renders it using an HTML template.",
+        "operationId": "getPost",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A successful response containing the rendered HTML of the post.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<html><head><title>Post Title</title></head><body><h1>Post Title</h1><p>This is the content of the post.</p></body></html>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Post not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Internal server error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Post"
+        ],
+        "deprecated": false,
+        "insights": {
+          "performance_insights": [
+            {
+              "insight": "Response Size Optimization",
+              "recommendation": "Consider compressing the HTML response using gzip or Brotli to reduce the payload size, which can improve load times for clients."
+            },
+            {
+              "insight": "Caching Strategy",
+              "recommendation": "Implement caching mechanisms (e.g., HTTP caching headers) for the HTML response to reduce server load and improve response times for frequently accessed posts."
+            }
+          ],
+          "security_insights": [
+            {
+              "insight": "Input Validation",
+              "recommendation": "Even though there are no parameters in the GET request, ensure that any future parameters are validated to prevent injection attacks."
+            },
+            {
+              "insight": "Error Handling",
+              "recommendation": "Ensure that error messages do not expose sensitive information. For example, the 500 error response should be generic and not reveal internal server details."
+            }
+          ],
+          "optimization_insights": [
+            {
+              "insight": "HTML Rendering Performance",
+              "recommendation": "Consider optimizing the HTML rendering process, possibly by using a more efficient templating engine or pre-rendering static content where applicable."
+            },
+            {
+              "insight": "Asynchronous Processing",
+              "recommendation": "If fetching the post involves heavy database queries, consider implementing asynchronous processing or background jobs to improve response times."
+            }
+          ],
+          "additional_metadata": {
+            "api_version": "1.0.0",
+            "last_updated": "2023-10-01",
+            "contact": {
+              "email": "support@example.com",
+              "documentation_url": "https://api.example.com/docs"
+            }
+          }
+        }
+      }
+    },
+    "/post/{post_id}": {
+      "get": {
+        "summary": "Retrieve a specific blog post",
+        "description": "Fetches a blog post based on the provided post ID. The response is rendered as HTML using a template.",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "description": "The unique identifier for the blog post.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with the HTML representation of the blog post.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<html><body><h1>Post Title</h1><p>This is the content of the post.</p></body></html>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string",
+                      "example": "Post not found."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string",
+                      "example": "An unexpected error occurred."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Posts"
+        ],
+        "insights": {
+          "performance_insights": [
+            {
+              "insight": "Response Size",
+              "recommendation": "Consider using compression (e.g., Gzip) for HTML responses to reduce the size of the data being transmitted, which can improve load times."
+            },
+            {
+              "insight": "Caching",
+              "recommendation": "Implement caching strategies for frequently accessed blog posts to reduce server load and improve response times."
+            },
+            {
+              "insight": "Database Optimization",
+              "recommendation": "Ensure that the database query for fetching the blog post is optimized with appropriate indexing on the post_id field to enhance retrieval speed."
+            }
+          ],
+          "security_insights": [
+            {
+              "insight": "Input Validation",
+              "recommendation": "Ensure that the post_id parameter is validated on the server side to prevent SQL injection or other forms of attacks."
+            },
+            {
+              "insight": "Error Handling",
+              "recommendation": "Avoid exposing detailed error messages in production environments. Instead, log the details internally and return a generic error message to the client."
+            },
+            {
+              "insight": "Rate Limiting",
+              "recommendation": "Implement rate limiting on the endpoint to prevent abuse and protect against denial-of-service attacks."
+            }
+          ],
+          "optimization_insights": [
+            {
+              "insight": "Response Format",
+              "recommendation": "Consider providing a JSON response option for clients that may need to parse the data programmatically, in addition to the HTML format."
+            },
+            {
+              "insight": "Asynchronous Processing",
+              "recommendation": "If fetching the post involves heavy processing, consider using asynchronous processing to improve responsiveness."
+            }
+          ],
+          "additional_metadata": {
+            "api_version": "1.0.0",
+            "description": "API for fetching blog posts.",
+            "tags": [
+              "Posts"
+            ],
+            "contact_info": {
+              "email": "support@blogapi.com",
+              "documentation_url": "https://docs.blogapi.com"
+            }
+          }
+        }
+      }
+    },
+    "/tags": {
+      "get": {
+        "summary": "Retrieve a list of tags",
+        "description": "This endpoint retrieves a list of tags from the server and renders them in an HTML format. It fetches the tags asynchronously and returns a rendered HTML page using a specified template.",
+        "operationId": "getTags",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A successful response containing the rendered HTML page with tags",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<html><body><h1>Tags</h1><ul><li>tag1</li><li>tag2</li></ul></body></html>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to fetch tags"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tags"
+        ],
+        "deprecated": false,
+        "insights": {
+          "performance_insights": [
+            {
+              "insight": "Asynchronous fetching of tags is mentioned, which can improve performance by not blocking the main thread.",
+              "recommendation": "Ensure that the backend is optimized for handling asynchronous requests efficiently to minimize response times."
+            },
+            {
+              "insight": "The response returns a rendered HTML page, which may increase the payload size compared to returning JSON data.",
+              "recommendation": "Consider providing an option to return JSON data for clients that can render HTML on the client-side, reducing server load and improving performance."
+            }
+          ],
+          "security_insights": [
+            {
+              "insight": "The API does not require any authentication or authorization for accessing tags.",
+              "recommendation": "Implement authentication mechanisms (e.g., API keys, OAuth) to prevent unauthorized access to the tags endpoint."
+            },
+            {
+              "insight": "Error responses are returned in JSON format, which is good for consistency.",
+              "recommendation": "Ensure that sensitive information is not exposed in error messages to avoid potential security risks."
+            }
+          ],
+          "optimization_insights": [
+            {
+              "insight": "The endpoint currently does not have any query parameters for filtering or pagination.",
+              "recommendation": "Consider adding query parameters to allow clients to filter tags or paginate results, which can improve performance and usability for large datasets."
+            },
+            {
+              "insight": "The response schema for the successful response is a simple HTML string.",
+              "recommendation": "Consider using a more structured format for the HTML response, such as including metadata about the tags, to enhance the utility of the response."
+            }
+          ],
+          "additional_metadata": {
+            "api_version": "1.0.0",
+            "contact_info": {
+              "name": "API Support",
+              "url": "https://example.com/support",
+              "email": "support@example.com"
+            },
+            "license": {
+              "name": "MIT License",
+              "url": "https://opensource.org/licenses/MIT"
+            },
+            "server_url": "https://api.example.com/v1"
+          }
+        }
+      }
+    },
+    "/tag/{tag_id}": {
+      "get": {
+        "summary": "Retrieve a tag by its ID",
+        "description": "Fetches the details of a specific tag using its unique identifier. The response is rendered as an HTML page.",
+        "parameters": [
+          {
+            "name": "tag_id",
+            "in": "path",
+            "required": true,
+            "description": "The unique identifier of the tag to retrieve.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with the tag details rendered in HTML.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<html><head><title>Tag Details</title></head><body><h1>Tag Name</h1><p>Description of the tag.</p></body></html>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tag not found.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<html><head><title>Not Found</title></head><body><h1>404 Not Found</h1><p>The tag you are looking for does not exist.</p></body></html>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<html><head><title>Error</title></head><body><h1>500 Internal Server Error</h1><p>Something went wrong on our end.</p></body></html>"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tags"
+        ],
+        "insights": {
+          "performance_insights": [
+            "Consider implementing caching mechanisms for frequently accessed tags to reduce server load and improve response times.",
+            "If the HTML response is generated dynamically, assess the rendering time and optimize the backend logic to minimize delays.",
+            "Monitor the average response time for the 200 status code to ensure it meets user expectations, especially under high load."
+          ],
+          "security_insights": [
+            "Ensure that the API is protected against common web vulnerabilities such as SQL injection and cross-site scripting (XSS) when rendering HTML content.",
+            "Implement rate limiting to prevent abuse of the endpoint, especially since it exposes tag details which could be sensitive.",
+            "Consider using HTTPS to encrypt data in transit, protecting against man-in-the-middle attacks."
+          ],
+          "optimization_insights": [
+            "Evaluate the HTML response size and optimize it by minimizing unnecessary tags and attributes to improve loading times.",
+            "Consider providing a JSON response option for clients that may prefer a structured data format over HTML, which can be more easily parsed and utilized.",
+            "Review the error handling for the 404 and 500 responses to ensure they are informative yet do not expose sensitive information about the server or application."
+          ],
+          "additional_metadata": {
+            "api_version": "1.0.0",
+            "last_updated": "2023-10-01",
+            "contact_info": {
+              "email": "support@example.com",
+              "documentation_url": "https://api.example.com/docs"
+            },
+            "usage_notes": "This API is intended for use in applications that require detailed tag information. Ensure proper error handling is implemented on the client side."
+          }
+        }
+      }
+    },
+    "/tag/{tag_id}/{page}": {
+      "get": {
+        "summary": "Retrieve Posts by Tag",
+        "description": "Fetches a paginated list of posts associated with a specific tag identified by `tag_id`. The results are returned in an HTML format. The `page` parameter allows for pagination, with a default of 0 (the first page). Each page contains a maximum of 3 posts.",
+        "parameters": [
+          {
+            "name": "tag_id",
+            "in": "path",
+            "required": true,
+            "description": "The unique identifier for the tag.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": false,
+            "description": "The page number for pagination. Defaults to 0.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response containing the HTML representation of the posts associated with the specified tag.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<html><body><h1>Posts for Tag 1</h1><div>Post 1</div><div>Post 2</div><div>Post 3</div></body></html>"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tag not found.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<html><body><h1>404 Not Found</h1><p>The requested tag does not exist.</p></body></html>"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string",
+                  "example": "<html><body><h1>500 Internal Server Error</h1><p>Something went wrong on our end.</p></body></html>"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Posts"
+        ],
+        "operationId": "getPostsByTag",
+        "insights": {
+          "performance_insights": [
+            {
+              "insight": "Paginated responses with a maximum of 3 posts per page help reduce load times.",
+              "recommendation": "Consider implementing caching mechanisms for frequently accessed tags to further improve response times."
+            },
+            {
+              "insight": "Returning HTML directly may increase the size of the response compared to JSON.",
+              "recommendation": "Evaluate the necessity of HTML responses; consider providing a JSON format option for better performance and flexibility."
+            }
+          ],
+          "security_insights": [
+            {
+              "insight": "The API does not specify authentication or authorization mechanisms.",
+              "recommendation": "Implement API key or token-based authentication to secure access to the endpoint."
+            },
+            {
+              "insight": "Path parameters are susceptible to injection attacks if not properly validated.",
+              "recommendation": "Ensure that `tag_id` is validated and sanitized to prevent SQL injection or other types of attacks."
+            }
+          ],
+          "optimization_insights": [
+            {
+              "insight": "The default pagination starts at 0, which is standard but may confuse some users.",
+              "recommendation": "Consider documenting the pagination behavior clearly in the API documentation to avoid confusion."
+            },
+            {
+              "insight": "The API returns HTML for all responses, including errors.",
+              "recommendation": "Consider providing a JSON response for errors to facilitate easier error handling in client applications."
+            }
+          ],
+          "additional_metadata": {
+            "version": "1.0",
+            "last_updated": "2023-10-01",
+            "contact": {
+              "email": "support@example.com",
+              "documentation_url": "https://api.example.com/docs"
+            },
+            "tags": [
+              "Posts",
+              "Tags",
+              "Pagination"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com"
+    }
+  ]
+}
