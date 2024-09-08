@@ -1,20 +1,23 @@
 from kaizen.llms.provider import LLMProvider
+import json
 
 class AIEngine:
     def __init__(self):
         self.llm_provider = LLMProvider()
 
-    async def generate_documentation(self, api_spec):
-        prompt = f"Generate detailed documentation for this API specification in OpenAPI 3.1 format:\n{api_spec}"
-        response, usage = self.llm_provider.chat_completion(prompt=prompt)
-        return response, usage
+    def generate_api_spec(self, api_spec):
+        prompt = f"""Generate a detailed OpenAPI 3.1 specification document based on the following API structure:
 
-    async def generate_test_cases(self, endpoint_info):
-        prompt = f"Generate test cases for this API endpoint:\n{endpoint_info}"
-        response, usage = self.llm_provider.chat_completion(prompt=prompt)
-        return response, usage
+{json.dumps(api_spec, indent=2)}
 
-    async def process_natural_language_query(self, query):
-        prompt = f"Interpret this API-related query and provide a response:\n{query}"
-        response, usage = self.llm_provider.chat_completion(prompt=prompt)
+Please enhance the specification with the following:
+1. Detailed descriptions for each endpoint
+2. Appropriate request and response schemas
+3. Example requests and responses
+4. Any additional metadata that would be useful for developers
+5. only create the path and method provided in api_spec above
+
+Return the result as a valid JSON string representing the complete OpenAPI 3.1 specification. Just return the JSON inside the method of the path."""
+
+        response, usage = self.llm_provider.chat_completion_with_json(prompt=prompt)
         return response, usage

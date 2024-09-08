@@ -3,9 +3,9 @@ import json
 import os
 import asyncio
 
-async def analyze_and_print(repo_path, github_token=None):
+def analyze_and_print(repo_path, github_token=None):
     analyzer = CodebaseAnalyzer(repo_path, github_token)
-    api_spec = await analyzer.analyze()  # Ensure this is awaited
+    api_spec = analyzer.analyze()  # Ensure this is awaited
 
     print(f"API Specification for {repo_path}:")
     print(json.dumps(api_spec, indent=2))
@@ -21,7 +21,7 @@ async def analyze_and_print(repo_path, github_token=None):
     print(f"API specification has been saved to {output_file}")
 
 
-async def main():
+def main():
     # Example with a GitHub URL
     # github_url = "https://github.com/tiangolo/fastapi"
     # analyze_and_print(github_url)
@@ -30,8 +30,8 @@ async def main():
 
     # Example with a local path
     local_path = "sample_repos/fastapi_app"
-    await analyze_and_print(local_path)
+    analyze_and_print(local_path)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
