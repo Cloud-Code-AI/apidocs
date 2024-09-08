@@ -10,6 +10,22 @@ const Badge = ({ children, color }) => (
   </span>
 );
 
+const MethodBadge = ({ method }) => {
+  const colors = {
+    get: 'bg-green-100 text-green-800',
+    post: 'bg-blue-100 text-blue-800',
+    put: 'bg-yellow-100 text-yellow-800',
+    patch: 'bg-orange-100 text-orange-800',
+    delete: 'bg-red-100 text-red-800',
+  };
+
+  return (
+    <Badge color={colors[method.toLowerCase()] || 'bg-gray-100 text-gray-800'}>
+      {method.toUpperCase()}
+    </Badge>
+  );
+};
+
 const Parameter = ({ param }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
@@ -94,11 +110,11 @@ const Parameter = ({ param }) => {
 
 const EndpointSection = ({ id, method, servers, path, summary, description, parameters, requestBody, security }) => (
   <section id={id} className="mb-8 flex flex-col lg:flex-row gap-6">
-    <div className="lg:w-[70%] border border-gray-200 rounded-lg overflow-hidden">
+    <div className="lg:w-[65%] border border-gray-200 rounded-lg overflow-hidden">
       <div className="bg-gray-50 p-4 border-b border-gray-200">
         <h3 className="text-xl font-semibold mb-2">{summary}</h3>
         <p className="text-muted-foreground mb-2 flex items-center">
-          <Badge color="bg-blue-100 text-blue-800">{method.toUpperCase()}</Badge>
+          <MethodBadge method={method} />
           <code className="ml-2 text-sm bg-gray-200 px-2 py-1 rounded">{path}</code>
         </p>
         <p className="text-sm text-gray-600">{description}</p>
@@ -134,7 +150,7 @@ const EndpointSection = ({ id, method, servers, path, summary, description, para
         </div>
       )}
     </div>
-    <div className="lg:w-[30%]">
+    <div className="lg:w-[35%]">
       <ApiUsage apiSpec={{ servers: servers, paths: { [path]: { [method]: { parameters, requestBody } } } }} />
     </div>
   </section>

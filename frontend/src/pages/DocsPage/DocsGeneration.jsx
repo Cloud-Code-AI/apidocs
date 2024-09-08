@@ -283,7 +283,7 @@ function DocsGeneration() {
       <Header />
       <main className="flex-1 flex overflow-hidden">
         <Sidebar apiSpec={parsedSpec} onEndpointClick={handleEndpointClick} />
-        <div className="flex-1 overflow-y-auto px-12 py-8">
+        <div className="flex-1 overflow-y-auto p-8">
           <div className="mb-6">
             <Specification 
               specification={spec} 
