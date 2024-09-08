@@ -97,19 +97,10 @@ export function ApiUsage({ apiSpec }) {
     <div className="space-y-6">
       {Object.entries(paths).map(([path, methods]) => 
         Object.entries(methods).map(([method, details]) => (
-          <Card key={`${method}-${path}`} className="shadow-sm">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-xl">{details.summary}</CardTitle>
-                <Badge variant="outline" className="text-sm font-medium">
-                  {method.toUpperCase()}
-                </Badge>
-              </div>
-              <p className="text-muted-foreground text-sm">{path}</p>
-            </CardHeader>
+          <Card key={`${method}-${path}`} className="p-0 m-0 border-none shadow-none">
             <CardContent>
               <Tabs defaultValue="javascript" onValueChange={setActiveTab}>
-                <div className="flex justify-between items-center mb-2">
+                <div className="flex justify-between items-center m-0">
                   <TabsList className="grid grid-cols-3 w-[300px]">
                     <TabsTrigger value="javascript">JavaScript</TabsTrigger>
                     <TabsTrigger value="python">Python</TabsTrigger>

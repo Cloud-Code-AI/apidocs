@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ApiUsage } from './apiUsage';
 
 const Badge = ({ children, color }) => (
   <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${color} mr-2`}>
@@ -92,45 +93,50 @@ const Parameter = ({ param }) => {
 };
 
 const EndpointSection = ({ method, path, summary, description, parameters, requestBody, security }) => (
-  <section className="mb-8 border border-gray-200 rounded-lg overflow-hidden">
-    <div className="bg-gray-50 p-4 border-b border-gray-200">
-      <h3 className="text-xl font-semibold mb-2">{summary}</h3>
-      <p className="text-muted-foreground mb-2 flex items-center">
-        <Badge color="bg-blue-100 text-blue-800">{method.toUpperCase()}</Badge>
-        <code className="ml-2 text-sm bg-gray-200 px-2 py-1 rounded">{path}</code>
-      </p>
-      <p className="text-sm text-gray-600">{description}</p>
-      {security && security.length > 0 && (
-        <p className="mt-2"><Badge color="bg-yellow-100 text-yellow-800">Requires Authentication</Badge></p>
+  <section className="mb-8 flex flex-col lg:flex-row gap-6">
+    <div className="lg:w-[70%] border border-gray-200 rounded-lg overflow-hidden">
+      <div className="bg-gray-50 p-4 border-b border-gray-200">
+        <h3 className="text-xl font-semibold mb-2">{summary}</h3>
+        <p className="text-muted-foreground mb-2 flex items-center">
+          <Badge color="bg-blue-100 text-blue-800">{method.toUpperCase()}</Badge>
+          <code className="ml-2 text-sm bg-gray-200 px-2 py-1 rounded">{path}</code>
+        </p>
+        <p className="text-sm text-gray-600">{description}</p>
+        {security && security.length > 0 && (
+          <p className="mt-2"><Badge color="bg-yellow-100 text-yellow-800">Requires Authentication</Badge></p>
+        )}
+      </div>
+      
+      {parameters && parameters.length > 0 && (
+        <div className="p-4">
+          <h4 className="font-semibold mb-3">Parameters:</h4>
+          <ul className="space-y-2">
+            {parameters.map((param, index) => (
+              <Parameter key={index} param={param} />
+            ))}
+          </ul>
+        </div>
+      )}
+      
+      {requestBody && (
+        <div className="p-4 border-t border-gray-200">
+          <h4 className="font-semibold mb-2">Request Body:</h4>
+          <p className="text-sm">JSON object containing:</p>
+          <ul className="list-disc pl-5 mt-2 space-y-1">
+            {Object.entries(requestBody.content['application/json'].schema.properties).map(([key, value]) => (
+              <li key={key} className="text-sm">
+                <code className="bg-gray-100 px-1 py-0.5 rounded">{key}</code>
+                {value.type && <span className="text-gray-600 ml-2">({value.type})</span>}
+                {value.description && <span className="text-gray-600 ml-2">- {value.description}</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
-    
-    {parameters && parameters.length > 0 && (
-      <div className="p-4">
-        <h4 className="font-semibold mb-3">Parameters:</h4>
-        <ul className="space-y-2">
-          {parameters.map((param, index) => (
-            <Parameter key={index} param={param} />
-          ))}
-        </ul>
-      </div>
-    )}
-    
-    {requestBody && (
-      <div className="p-4 border-t border-gray-200">
-        <h4 className="font-semibold mb-2">Request Body:</h4>
-        <p className="text-sm">JSON object containing:</p>
-        <ul className="list-disc pl-5 mt-2 space-y-1">
-          {Object.entries(requestBody.content['application/json'].schema.properties).map(([key, value]) => (
-            <li key={key} className="text-sm">
-              <code className="bg-gray-100 px-1 py-0.5 rounded">{key}</code>
-              {value.type && <span className="text-gray-600 ml-2">({value.type})</span>}
-              {value.description && <span className="text-gray-600 ml-2">- {value.description}</span>}
-            </li>
-          ))}
-        </ul>
-      </div>
-    )}
+    <div className="lg:w-[30%]">
+      <ApiUsage apiSpec={{ paths: { [path]: { [method]: { parameters, requestBody } } } }} />
+    </div>
   </section>
 );
 
@@ -140,9 +146,6 @@ export function Documentation({ apiSpec }) {
 
   const FormattedDocs = () => (
     <>
-      <h2 className="text-2xl font-semibold mb-4">{info.title} Documentation</h2>
-      <p className="mb-4">{info.description}</p>
-      
       {Object.entries(paths).map(([path, methods]) => 
         Object.entries(methods).map(([method, details]) => (
           <EndpointSection 
@@ -161,18 +164,6 @@ export function Documentation({ apiSpec }) {
             }}
           />
         ))
-      )}
-
-      {components.securitySchemes && (
-        <section className="mb-6">
-          <h3 className="text-xl font-semibold mb-2">Authentication</h3>
-          {Object.entries(components.securitySchemes).map(([key, scheme]) => (
-            <div key={key}>
-              <p className="mb-2">Some endpoints require authentication using {scheme.type}.</p>
-              <p className="mb-2">Include the {scheme.type} in the <strong>{scheme.name}</strong> {scheme.in} of your requests.</p>
-            </div>
-          ))}
-        </section>
       )}
     </>
   );

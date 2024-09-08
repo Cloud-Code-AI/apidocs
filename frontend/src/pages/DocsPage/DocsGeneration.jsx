@@ -284,15 +284,12 @@ function DocsGeneration() {
           />
         </div>
         <div className="flex flex-col lg:flex-row gap-6">
-          <div className="lg:w-[70%]">
+          <div className="lg:w-full">
             {parsedSpec ? (
               <Documentation apiSpec={parsedSpec} />
             ) : (
               <p>Enter a valid OpenAPI specification to generate documentation.</p>
             )}
-          </div>
-          <div className="lg:w-[30%]">
-            <ApiUsage apiSpec={parsedSpec} />
           </div>
         </div>
       </main>
