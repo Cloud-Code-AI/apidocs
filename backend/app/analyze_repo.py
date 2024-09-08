@@ -5,10 +5,20 @@ from typing import List, Dict, Any
 import importlib
 import sys
 import tempfile
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import re
 from github import Github
 from github import GithubException
+from backend.app.ai_engine import AIEngine
+from backend.helpers.code_chunker import chunk_code
+import traceback
+import logging
 
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 class CodebaseAnalyzer:
     def __init__(self, repo_path: str, github_token: str = None):
@@ -22,14 +32,59 @@ class CodebaseAnalyzer:
             "components": {"schemas": {}},
         }
         self.is_github_url = repo_path.startswith("https://github.com/")
+        self.ai_engine = AIEngine()
+    
+    def parse_repository(self, repo_path: str):
+        with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
+            futures = []
+            for root, _, files in os.walk(repo_path):
+                for file in files:
+                    self.total_files_processed += 1
+                    if file.endswith(
+                        (".py", ".js", ".ts", ".rs")
+                    ):  # Add more extensions as needed
+                        file_path = os.path.join(root, file)
+                        futures.append(executor.submit(self.parse_file, file_path))
 
-    def analyze(self) -> Dict[str, Any]:
+            for future in as_completed(futures):
+                try:
+                    future.result()
+                except Exception as e:
+                    logger.error(f"Error in parsing file: {str(e)}")
+                    logger.error(traceback.format_exc())
+
+    def parse_file(self, file_path: str):
+        logger.debug(f"Parsing file: {file_path}")
+        try:
+            with open(file_path, "r", encoding="utf-8") as file:
+                content = file.read()
+
+            language = self.get_language_from_extension(file_path)
+            chunked_code = chunk_code(content, language)
+
+            for section, items in chunked_code.items():
+                if isinstance(items, dict):
+                    for name, code_info in items.items():
+                        self.process_code_block(code_info, file_path, section, name)
+                elif isinstance(items, list):
+                    for i, code_info in enumerate(items):
+                        self.process_code_block(
+                            code_info, file_path, section, f"{section}_{i}"
+                        )
+            logger.debug(f"Successfully parsed file: {file_path}")
+        except Exception as e:
+            logger.error(f"Error processing file {file_path}: {str(e)}")
+            logger.error(traceback.format_exc())
+
+    async def analyze(self) -> Dict[str, Any]:
         if self.is_github_url:
             with tempfile.TemporaryDirectory() as tmp_dir:
                 self._clone_repo(tmp_dir)
                 self._process_directory(tmp_dir)
         else:
             self._process_directory(self.repo_path)
+        await self._enrich_api_spec_with_context()
+        await self._generate_documentation()
         return self.api_spec
 
     def _clone_repo(self, tmp_dir: str):
@@ -131,7 +186,7 @@ class CodebaseAnalyzer:
         spec.loader.exec_module(module)
 
         class_obj = getattr(module, class_name)
-
+        print(inspect.getsource(class_obj))
         if hasattr(class_obj, "router"):  # FastAPI router
             self._process_fastapi_router(class_obj)
         elif hasattr(class_obj, "as_view"):  # Django class-based view
@@ -175,3 +230,30 @@ class CodebaseAnalyzer:
                 }
                 params.append(param_info)
         return params
+
+    async def _enrich_api_spec_with_context(self):
+        for path, methods in self.api_spec['paths'].items():
+            for method, details in methods.items():
+                query = f"{method} {path}"
+                results = self.repo_analyzer.query(query)
+                if results:
+                    context = results[0]  # Take the most relevant result
+                    details['context'] = {
+                        'file_path': context['file_path'],
+                        'relevance_score': context['relevance_score'],
+                        # Add other relevant fields from the context
+                    }
+
+    async def _generate_documentation(self):
+        for path, methods in self.api_spec['paths'].items():
+            for method, details in methods.items():
+                endpoint_info = {
+                    'path': path,
+                    'method': method,
+                    'details': details
+                }
+                documentation = await self.ai_engine.generate_documentation(endpoint_info)
+                details['ai_generated_documentation'] = documentation
+
+                test_cases = await self.ai_engine.generate_test_cases(endpoint_info)
+                details['ai_generated_test_cases'] = test_cases
