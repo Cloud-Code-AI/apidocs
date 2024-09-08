@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Github, Loader2, Mail } from 'lucide-react'
@@ -9,6 +10,7 @@ export function Specification({ onSpecificationGenerated, isProd }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isSendingEmail, setIsSendingEmail] = useState(false)
   const [error, setError] = useState(null)
+  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -27,10 +29,18 @@ export function Specification({ onSpecificationGenerated, isProd }) {
       if (!response.ok) {
         throw new Error('Failed to generate specification')
       }
-      console.log("Specification: ", url)
-      const repoName = url.split('/').pop().replace('.git', '')
-      console.log("Reponame: ", url)
-      onSpecificationGenerated(repoName)
+
+      const data = await response.json()
+      const fileName = data.fileName // Assuming the API returns the generated file name
+
+      if (!fileName) {
+        throw new Error('No file name returned from the API')
+      }
+
+      onSpecificationGenerated(fileName)
+      
+      // Redirect to the URL with the file name as a parameter
+      navigate(`?file=${fileName}`)
     } catch (error) {
       console.error('Failed to generate specification:', error)
       setError('Failed to generate specification. Please try again.')
