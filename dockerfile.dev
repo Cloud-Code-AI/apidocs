@@ -1,0 +1,41 @@
+# Use an official Python runtime as a parent image
+FROM python:3.9-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Install system dependencies, including git and development tools
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Poetry
+RUN curl -sSL https://install.python-poetry.org | python3 -
+
+# Add Poetry to PATH
+ENV PATH="${PATH}:/root/.local/bin"
+
+# Copy only the dependency files to leverage Docker cache
+COPY pyproject.toml poetry.lock* /app/
+
+# Install project dependencies, including development dependencies
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi --with dev
+
+# Copy the rest of the application code
+COPY . /app
+
+# Install additional development tools
+RUN pip install pytest pytest-cov black isort mypy
+
+# Make port 8000 available to the world outside this container
+EXPOSE 8000
+
+# Set environment variables for development
+ENV FLASK_ENV=development
+ENV FLASK_DEBUG=1
+
+# Run the application in development mode
+CMD ["poetry", "run", "python", "backend/main.py"]

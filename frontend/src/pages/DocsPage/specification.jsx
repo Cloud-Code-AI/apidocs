@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Github, Loader2 } from 'lucide-react'
-// import { Mail } from 'lucide-react'  // Commented out for now
+import { Github, Loader2, Mail } from 'lucide-react'
 
 export function Specification({ onSpecificationGenerated, isProd }) {
   const [url, setUrl] = useState('')
+  const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isSendingEmail, setIsSendingEmail] = useState(false)
   const [error, setError] = useState(null)
-  // const [email, setEmail] = useState('')  // Commented out for now
-  // const [isSendingEmail, setIsSendingEmail] = useState(false)  // Commented out for now
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -40,7 +39,6 @@ export function Specification({ onSpecificationGenerated, isProd }) {
     }
   }
 
-  /* Commented out for now
   const sendEmail = async () => {
     if (!email) {
       setError('Please enter an email address.')
@@ -75,7 +73,6 @@ export function Specification({ onSpecificationGenerated, isProd }) {
       setIsSendingEmail(false)
     }
   }
-  */
 
   if (isProd) {
     return null; // Don't render anything in prod mode
@@ -109,7 +106,6 @@ export function Specification({ onSpecificationGenerated, isProd }) {
           )}
         </Button>
       </div>
-      {/* Commented out for now
       <div className="flex space-x-2">
         <Input
           type="email"
@@ -137,7 +133,6 @@ export function Specification({ onSpecificationGenerated, isProd }) {
           )}
         </Button>
       </div>
-      */}
       {error && <p className="text-red-500 text-sm">{error}</p>}
     </form>
   )
