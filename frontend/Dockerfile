@@ -1,26 +1,16 @@
-# Use an official Node runtime as the base image
-FROM node:18-alpine
+FROM node:18-alpine AS builder
 
-# Set the working directory in the container
-WORKDIR /app
+ 
+# USER node
+ 
+RUN mkdir -p /home/node/app
+WORKDIR /home/node/app
 
-# Copy package.json and package-lock.json (if available)
-COPY package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the frontend code
-COPY . .
-
-# Build the app
+# WORKDIR /app
+COPY frontend/package.json /home/node/app/
+RUN npm install --legacy-peer-deps
+COPY frontend/. /home/node/app
 RUN npm run build
-
-# Install a simple HTTP server to serve the static content
-RUN npm install -g http-server
-
-# Expose the port the app runs on
+RUN npm install -g serve
 EXPOSE 3000
-
-# Command to run the app
-CMD ["http-server", "dist", "-p", "3000"]
+CMD ["serve", "-s", "build", "-l" , "3000"]
