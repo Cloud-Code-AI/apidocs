@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ClipboardIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const generateJavaScriptCode = (method, path, parameters, requestBody) => {
   const url = `http://api.example.com/v1${path}`;
@@ -114,21 +116,59 @@ export function ApiUsage({ apiSpec }) {
                   } 
                 />
               </div>
-              <TabsContent value="javascript">
-                <pre className="bg-gray-100 p-4 rounded-lg text-sm whitespace-pre-wrap break-words">
-                  <code>{generateJavaScriptCode(method, path, details.parameters, details.requestBody)}</code>
-                </pre>
-              </TabsContent>
-              <TabsContent value="python">
-                <pre className="bg-gray-100 p-4 rounded-lg text-sm whitespace-pre-wrap break-words">
-                  <code>{generatePythonCode(method, path, details.parameters, details.requestBody)}</code>
-                </pre>
-              </TabsContent>
-              <TabsContent value="curl">
-                <pre className="bg-gray-100 p-4 rounded-lg text-sm whitespace-pre-wrap break-words">
-                  <code>{generateCurlCode(method, path, details.parameters, details.requestBody)}</code>
-                </pre>
-              </TabsContent>
+              <div className="max-w-full">
+                <TabsContent value="javascript">
+                  <SyntaxHighlighter 
+                    language="javascript" 
+                    style={prism} 
+                    customStyle={{
+                      borderRadius: '0.5rem',
+                      fontSize: '0.875rem',
+                      padding: '1rem',
+                      backgroundColor: 'rgb(246, 248, 250)', // Light gray background
+                    }}
+                    wrapLines={true}
+                    wrapLongLines={true}
+                    lineProps={{style: {wordBreak: 'break-all', whiteSpace: 'pre-wrap'}}}
+                  >
+                    {generateJavaScriptCode(method, path, details.parameters, details.requestBody)}
+                  </SyntaxHighlighter>
+                </TabsContent>
+                <TabsContent value="python">
+                  <SyntaxHighlighter 
+                    language="python" 
+                    style={prism} 
+                    customStyle={{
+                      borderRadius: '0.5rem',
+                      fontSize: '0.875rem',
+                      padding: '1rem',
+                      backgroundColor: 'rgb(246, 248, 250)', // Light gray background
+                    }}
+                    wrapLines={true}
+                    wrapLongLines={true}
+                    lineProps={{style: {wordBreak: 'break-all', whiteSpace: 'pre-wrap'}}}
+                  >
+                    {generatePythonCode(method, path, details.parameters, details.requestBody)}
+                  </SyntaxHighlighter>
+                </TabsContent>
+                <TabsContent value="curl">
+                  <SyntaxHighlighter 
+                    language="bash" 
+                    style={prism} 
+                    customStyle={{
+                      borderRadius: '0.5rem',
+                      fontSize: '0.875rem',
+                      padding: '1rem',
+                      backgroundColor: 'rgb(246, 248, 250)', // Light gray background
+                    }}
+                    wrapLines={true}
+                    wrapLongLines={true}
+                    lineProps={{style: {wordBreak: 'break-all', whiteSpace: 'pre-wrap'}}}
+                  >
+                    {generateCurlCode(method, path, details.parameters, details.requestBody)}
+                  </SyntaxHighlighter>
+                </TabsContent>
+              </div>
             </Tabs>
           </div>
         ))
