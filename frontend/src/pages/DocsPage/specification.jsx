@@ -16,19 +16,20 @@ export function Specification({ onSpecificationGenerated, isProd }) {
     setError(null)
 
     try {
-      const response = await fetch('http://api.akiradocs.com/api/document_generation', {
+      const response = await fetch('https://api.akiradocs.com/api/generate_documentation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url: url }),
       })
 
       if (!response.ok) {
         throw new Error('Failed to generate specification')
       }
-
+      console.log("Specification: ", url)
       const repoName = url.split('/').pop().replace('.git', '')
+      console.log("Reponame: ", url)
       onSpecificationGenerated(repoName)
     } catch (error) {
       console.error('Failed to generate specification:', error)

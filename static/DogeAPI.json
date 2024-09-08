@@ -7,34 +7,38 @@
     "paths": {
         "/": {
             "get": {
-                "summary": "Retrieve all users",
-                "description": "This endpoint retrieves a list of all users from the database. It returns user data in a structured format, allowing clients to access user information efficiently.",
-                "operationId": "getUsers",
+                "summary": "Retrieve all blogs",
+                "description": "This endpoint retrieves a list of all blogs available in the database. It requires the user to be authenticated.",
+                "operationId": "getAllBlogs",
                 "parameters": [],
                 "responses": {
                     "200": {
-                        "description": "A list of users retrieved successfully.",
+                        "description": "A list of blogs retrieved successfully.",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/ShowUser"
+                                        "$ref": "#/components/schemas/ShowBlog"
                                     }
                                 },
                                 "examples": {
                                     "example1": {
-                                        "summary": "A sample response with user data",
+                                        "summary": "A sample response with two blogs",
                                         "value": [
                                             {
                                                 "id": 1,
-                                                "name": "John Doe",
-                                                "email": "john.doe@example.com"
+                                                "title": "First Blog",
+                                                "content": "This is the content of the first blog.",
+                                                "author": "Author One",
+                                                "created_at": "2023-01-01T12:00:00Z"
                                             },
                                             {
                                                 "id": 2,
-                                                "name": "Jane Smith",
-                                                "email": "jane.smith@example.com"
+                                                "title": "Second Blog",
+                                                "content": "This is the content of the second blog.",
+                                                "author": "Author Two",
+                                                "created_at": "2023-01-02T12:00:00Z"
                                             }
                                         ]
                                     }
@@ -42,56 +46,47 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized - User must be authenticated."
+                    },
                     "500": {
-                        "description": "Internal server error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "detail": {
-                                            "type": "string",
-                                            "example": "An unexpected error occurred."
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        "description": "Internal Server Error - An unexpected error occurred."
                     }
                 },
-                "security": [],
-                "tags": [
-                    "Users"
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
                 ],
                 "insights": {
                     "performance_insights": [
                         {
-                            "insight": "The API retrieves all users in a single request.",
-                            "recommendation": "Consider implementing pagination to limit the number of users returned in a single response, especially if the user base is large. This will reduce response time and improve performance."
+                            "insight": "Consider implementing pagination for the list of blogs.",
+                            "recommendation": "If the number of blogs grows, returning all blogs in a single response can lead to performance issues. Implement pagination parameters (e.g., `page` and `limit`) to improve response times and reduce payload size."
                         },
                         {
-                            "insight": "The response schema uses a structured format for user data.",
-                            "recommendation": "Ensure that the database query is optimized to retrieve user data efficiently, potentially using indexing on frequently queried fields like 'id' or 'email'."
+                            "insight": "Caching could improve response times for frequently accessed data.",
+                            "recommendation": "Implement a caching mechanism (e.g., HTTP caching headers) to store and serve frequently requested blog lists without hitting the database every time."
                         }
                     ],
                     "security_insights": [
                         {
-                            "insight": "The endpoint does not require authentication or authorization.",
-                            "recommendation": "Implement security measures such as API key validation or OAuth2 to restrict access to the endpoint, preventing unauthorized access to user data."
+                            "insight": "Authentication is required but not enforced at the endpoint level.",
+                            "recommendation": "Ensure that the authentication mechanism is properly implemented and that unauthorized requests are effectively blocked."
                         },
                         {
-                            "insight": "The API does not specify rate limiting.",
-                            "recommendation": "Consider implementing rate limiting to prevent abuse of the endpoint, which could lead to performance degradation or denial of service."
+                            "insight": "Consider adding rate limiting to prevent abuse.",
+                            "recommendation": "Implement rate limiting to protect the API from excessive requests, which can lead to denial-of-service attacks."
                         }
                     ],
                     "optimization_insights": [
                         {
-                            "insight": "The response includes a detailed user object.",
-                            "recommendation": "Evaluate whether all fields in the user object are necessary for every client. If not, consider allowing clients to specify which fields they want to retrieve to reduce payload size."
+                            "insight": "Response payload can be optimized by excluding unnecessary fields.",
+                            "recommendation": "If certain fields (e.g., `content`) are not needed in all use cases, consider allowing clients to specify which fields they want in the response to reduce payload size."
                         },
                         {
-                            "insight": "The API returns a 500 error response with a generic message.",
-                            "recommendation": "Enhance error handling to provide more specific error messages that can help clients diagnose issues, while ensuring sensitive information is not exposed."
+                            "insight": "Use of HTTP status codes is appropriate but could be expanded.",
+                            "recommendation": "Consider adding more specific error codes (e.g., 404 for not found) to provide clearer feedback to clients."
                         }
                     ],
                     "additional_metadata": {
@@ -101,28 +96,31 @@
                             "url": "http://www.example.com/support",
                             "email": "support@example.com"
                         },
-                        "last_updated": "2023-10-01"
+                        "license": {
+                            "name": "MIT",
+                            "url": "https://opensource.org/licenses/MIT"
+                        }
                     }
                 }
             },
             "post": {
-                "summary": "Create a new user",
-                "description": "This endpoint allows clients to create a new user in the system. The user details must be provided in the request body. Upon successful creation, the newly created user object will be returned.",
-                "operationId": "createUser",
+                "summary": "Create a Blog",
+                "description": "This endpoint allows the user to create a new blog entry. The user must be authenticated to access this endpoint.",
+                "operationId": "createBlog",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/User"
+                                "$ref": "#/components/schemas/Blog"
                             },
                             "examples": {
                                 "example1": {
-                                    "summary": "A sample user creation request",
+                                    "summary": "A sample blog creation request",
                                     "value": {
-                                        "username": "john_doe",
-                                        "email": "john.doe@example.com",
-                                        "password": "securePassword123"
+                                        "title": "My First Blog",
+                                        "content": "This is the content of my first blog.",
+                                        "author_id": 1
                                     }
                                 }
                             }
@@ -131,19 +129,20 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "User created successfully",
+                        "description": "Blog created successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ShowUser"
+                                    "$ref": "#/components/schemas/Blog"
                                 },
                                 "examples": {
                                     "example1": {
-                                        "summary": "A sample response for user creation",
+                                        "summary": "A sample blog creation response",
                                         "value": {
                                             "id": 1,
-                                            "username": "john_doe",
-                                            "email": "john.doe@example.com",
+                                            "title": "My First Blog",
+                                            "content": "This is the content of my first blog.",
+                                            "author_id": 1,
                                             "created_at": "2023-10-01T12:00:00Z"
                                         }
                                     }
@@ -152,118 +151,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request - Invalid user data",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error - Unable to create user",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "User Management"
-                ],
-                "insights": {
-                    "performance_insights": [
-                        {
-                            "insight": "Consider implementing rate limiting on the POST / endpoint to prevent abuse and ensure fair usage.",
-                            "recommendation": "Use a rate limiting strategy to restrict the number of requests from a single IP address within a given timeframe."
-                        },
-                        {
-                            "insight": "The response time for user creation can be affected by database performance.",
-                            "recommendation": "Optimize database queries and consider indexing fields like username and email to speed up user creation."
-                        }
-                    ],
-                    "security_insights": [
-                        {
-                            "insight": "Sensitive information such as passwords should be handled securely.",
-                            "recommendation": "Ensure that passwords are hashed and salted before storage. Use a strong hashing algorithm like bcrypt."
-                        },
-                        {
-                            "insight": "Input validation is crucial to prevent injection attacks.",
-                            "recommendation": "Implement server-side validation for the username, email, and password fields to ensure they meet expected formats and constraints."
-                        },
-                        {
-                            "insight": "The API should provide feedback on authentication failures.",
-                            "recommendation": "Consider implementing a mechanism to limit failed login attempts to mitigate brute-force attacks."
-                        }
-                    ],
-                    "optimization_insights": [
-                        {
-                            "insight": "The response payload for successful user creation could be minimized.",
-                            "recommendation": "Return only essential fields in the response (e.g., id, username) and consider omitting the email for privacy."
-                        },
-                        {
-                            "insight": "The error responses could be standardized for better client handling.",
-                            "recommendation": "Use consistent error codes and messages across different endpoints to simplify error handling on the client side."
-                        }
-                    ],
-                    "additional_metadata": {
-                        "api_version": "1.0",
-                        "last_updated": "2023-10-01",
-                        "contact": {
-                            "name": "API Support",
-                            "email": "support@example.com"
-                        },
-                        "documentation_url": "https://api.example.com/docs"
-                    }
-                }
-            }
-        },
-        "/{id}": {
-            "get": {
-                "summary": "Get a user by ID",
-                "description": "Retrieve a user from the database using their unique ID. This endpoint returns the user details in the response.",
-                "operationId": "getUserById",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "description": "The unique identifier of the user.",
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "User retrieved successfully.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ShowUser"
-                                },
-                                "examples": {
-                                    "example1": {
-                                        "summary": "A sample user response",
-                                        "value": {
-                                            "id": 1,
-                                            "name": "John Doe",
-                                            "email": "john.doe@example.com",
-                                            "created_at": "2023-01-01T12:00:00Z",
-                                            "updated_at": "2023-01-02T12:00:00Z"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "User not found.",
+                        "description": "Bad Request - Invalid input data",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -271,222 +159,7 @@
                                     "properties": {
                                         "detail": {
                                             "type": "string",
-                                            "example": "User not found"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [],
-                "tags": [
-                    "User"
-                ],
-                "insights": {
-                    "performance_insights": [
-                        {
-                            "insight": "Consider implementing caching mechanisms for user data.",
-                            "recommendation": "Utilize caching strategies such as in-memory caches (e.g., Redis) to reduce database load and improve response times for frequently accessed user data."
-                        },
-                        {
-                            "insight": "Optimize database queries for user retrieval.",
-                            "recommendation": "Ensure that the database query for retrieving users by ID is indexed properly to enhance performance, especially as the user base grows."
-                        }
-                    ],
-                    "security_insights": [
-                        {
-                            "insight": "No security measures are defined for this endpoint.",
-                            "recommendation": "Implement authentication and authorization mechanisms to restrict access to user data. Consider using OAuth2 or API keys."
-                        },
-                        {
-                            "insight": "User ID exposure in the URL can lead to enumeration attacks.",
-                            "recommendation": "Implement rate limiting and logging to detect and mitigate potential enumeration attacks on user IDs."
-                        }
-                    ],
-                    "optimization_insights": [
-                        {
-                            "insight": "Response payload size can be optimized.",
-                            "recommendation": "Consider using pagination or limiting the fields returned in the response to only those necessary for the client to reduce payload size."
-                        },
-                        {
-                            "insight": "Use of examples can enhance API documentation.",
-                            "recommendation": "Provide additional examples for different scenarios (e.g., valid user, user not found) to improve developer understanding and usage of the API."
-                        }
-                    ],
-                    "additional_metadata": {
-                        "api_version": "1.0.0",
-                        "last_updated": "2023-01-02",
-                        "contact": {
-                            "name": "API Support",
-                            "email": "support@example.com"
-                        },
-                        "documentation_url": "https://api.example.com/docs/user"
-                    }
-                }
-            },
-            "delete": {
-                "summary": "Delete a Blog",
-                "description": "This endpoint allows the user to delete a blog post by its unique identifier (ID). Only the authenticated user who created the blog can delete it.",
-                "operationId": "deleteBlog",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "description": "The unique identifier of the blog to delete.",
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Blog deleted successfully.",
-                        "content": {}
-                    },
-                    "404": {
-                        "description": "Blog not found.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "detail": {
-                                            "type": "string",
-                                            "example": "Blog not found"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden: You do not have permission to delete this blog.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "detail": {
-                                            "type": "string",
-                                            "example": "You do not have permission to delete this blog"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "tags": [
-                    "Blogs"
-                ],
-                "insights": {
-                    "performance_insights": [
-                        {
-                            "insight": "HTTP Status Codes",
-                            "recommendation": "Ensure that the server is optimized to handle the 204 No Content response efficiently, as it indicates successful deletion without returning a body."
-                        },
-                        {
-                            "insight": "Caching",
-                            "recommendation": "Consider implementing caching strategies for GET requests to blog posts to reduce load on the server, even though this DELETE endpoint does not directly benefit from caching."
-                        }
-                    ],
-                    "security_insights": [
-                        {
-                            "insight": "Authentication Requirement",
-                            "recommendation": "Ensure that the Bearer token is validated properly to confirm the identity of the user making the request, preventing unauthorized access."
-                        },
-                        {
-                            "insight": "Authorization Checks",
-                            "recommendation": "Implement robust authorization checks to ensure that only the creator of the blog can delete it, potentially logging attempts to delete by unauthorized users."
-                        },
-                        {
-                            "insight": "Error Handling",
-                            "recommendation": "Provide detailed logging for 403 Forbidden responses to track potential abuse or unauthorized access attempts."
-                        }
-                    ],
-                    "optimization_insights": [
-                        {
-                            "insight": "Response Size",
-                            "recommendation": "Since the 204 response does not return a body, ensure that the server is configured to minimize the overhead of response headers to optimize performance."
-                        },
-                        {
-                            "insight": "Rate Limiting",
-                            "recommendation": "Consider implementing rate limiting for DELETE requests to prevent abuse, especially if the endpoint is publicly accessible."
-                        }
-                    ],
-                    "additional_metadata": {
-                        "documentation": "Ensure that the API documentation clearly outlines the expected behaviors for each response code, especially for 403 and 404 scenarios.",
-                        "version": "1.0",
-                        "last_updated": "2023-10-01"
-                    }
-                }
-            },
-            "put": {
-                "summary": "Update a blog by ID",
-                "description": "This endpoint allows the user to update an existing blog post by providing the blog ID and the updated blog data. The user must be authenticated to perform this action.",
-                "operationId": "updateBlog",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "description": "The ID of the blog to update.",
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Blog"
-                            },
-                            "example": {
-                                "title": "Updated Blog Title",
-                                "content": "This is the updated content of the blog.",
-                                "author": "Author Name"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "202": {
-                        "description": "Blog updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Blog"
-                                },
-                                "example": {
-                                    "id": 1,
-                                    "title": "Updated Blog Title",
-                                    "content": "This is the updated content of the blog.",
-                                    "author": "Author Name"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Blog not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "detail": {
-                                            "type": "string",
-                                            "example": "Blog not found"
+                                            "example": "Invalid blog data"
                                         }
                                     }
                                 }
@@ -494,7 +167,7 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized",
+                        "description": "Unauthorized - User must be authenticated",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -518,32 +191,390 @@
                 "insights": {
                     "performance_insights": [
                         {
-                            "insight": "Use of HTTP status code 202 for successful updates may lead to confusion since it indicates that the request has been accepted for processing but not completed.",
-                            "recommendation": "Consider using HTTP status code 200 (OK) if the blog update is processed successfully and the response contains the updated blog data."
+                            "insight": "Response Size",
+                            "recommendation": "Ensure that the response payload is optimized by excluding any unnecessary fields. For instance, if the 'created_at' field is not required immediately after creation, consider omitting it from the response."
                         },
                         {
-                            "insight": "The response schema for successful updates and the request body schema are identical, which may lead to redundancy.",
-                            "recommendation": "Consider reusing the same schema reference in responses to reduce redundancy and improve maintainability."
+                            "insight": "Caching",
+                            "recommendation": "Implement caching strategies for frequently accessed blog entries to reduce load times and server strain, especially if the blog data is not frequently updated."
+                        },
+                        {
+                            "insight": "Rate Limiting",
+                            "recommendation": "Consider implementing rate limiting on the POST endpoint to prevent abuse and ensure fair usage among users."
                         }
                     ],
                     "security_insights": [
                         {
-                            "insight": "The API requires authentication via Bearer token, which is a good practice.",
-                            "recommendation": "Ensure that the token expiration and refresh mechanisms are implemented to enhance security."
+                            "insight": "Authentication Requirement",
+                            "recommendation": "Ensure that the authentication mechanism (BearerAuth) is robust and that tokens are securely generated and validated to prevent unauthorized access."
                         },
                         {
-                            "insight": "The API does not specify rate limiting or throttling mechanisms.",
-                            "recommendation": "Implement rate limiting to prevent abuse of the update endpoint, especially if the blog is popular."
+                            "insight": "Input Validation",
+                            "recommendation": "Implement strict input validation to prevent injection attacks. Ensure that the content of the blog does not allow for harmful scripts or SQL injections."
+                        },
+                        {
+                            "insight": "Error Handling",
+                            "recommendation": "Provide generic error messages for unauthorized access to avoid revealing sensitive information about the API structure."
                         }
                     ],
                     "optimization_insights": [
                         {
-                            "insight": "The request body is required to contain all fields defined in the Blog schema.",
-                            "recommendation": "Consider allowing partial updates (PATCH method) to enable users to update only the fields they want to change, which can reduce payload size."
+                            "insight": "Schema Reusability",
+                            "recommendation": "Consider reusing the 'Blog' schema for other related endpoints (e.g., GET, PUT) to maintain consistency and reduce redundancy in schema definitions."
                         },
                         {
-                            "insight": "The example provided in the request body and response is static.",
-                            "recommendation": "Consider dynamically generating examples based on real data to improve clarity and relevance for developers."
+                            "insight": "Asynchronous Processing",
+                            "recommendation": "If blog creation involves heavy processing (e.g., image uploads), consider implementing asynchronous processing to improve response times for the user."
+                        },
+                        {
+                            "insight": "Batch Processing",
+                            "recommendation": "If applicable, allow for batch creation of blogs to reduce the number of requests and improve overall efficiency."
+                        }
+                    ],
+                    "additional_metadata": {
+                        "api_version": "1.0",
+                        "last_updated": "2023-10-01",
+                        "contact": {
+                            "name": "API Support",
+                            "email": "support@api.example.com"
+                        },
+                        "documentation_url": "https://api.example.com/docs"
+                    }
+                }
+            }
+        },
+        "/{id}": {
+            "get": {
+                "summary": "Get a Blog by ID",
+                "description": "Retrieve a specific blog post using its unique identifier. This endpoint allows users to access detailed information about a blog post, including its content, author, and publication date.",
+                "operationId": "getBlogById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The unique identifier of the blog post.",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response with the blog details.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ShowBlog"
+                                },
+                                "examples": {
+                                    "example1": {
+                                        "summary": "A sample blog response",
+                                        "value": {
+                                            "id": 1,
+                                            "title": "Understanding OpenAPI",
+                                            "content": "OpenAPI Specification is a powerful tool for documenting APIs.",
+                                            "author": "Jane Doe",
+                                            "created_at": "2023-10-01T12:00:00Z",
+                                            "updated_at": "2023-10-02T12:00:00Z"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Blog not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "detail": {
+                                            "type": "string",
+                                            "example": "Blog not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "insights": {
+                    "performance_insights": [
+                        {
+                            "insight": "Consider implementing caching mechanisms for frequently accessed blog posts.",
+                            "recommendation": "Utilize HTTP caching headers (e.g., ETag, Cache-Control) to reduce server load and improve response times for repeated requests."
+                        },
+                        {
+                            "insight": "Response size can impact performance, especially for mobile users.",
+                            "recommendation": "Ensure that the response payload is optimized and only includes necessary fields. Consider providing options for different levels of detail."
+                        }
+                    ],
+                    "security_insights": [
+                        {
+                            "insight": "The endpoint requires Bearer authentication, which is a good practice for securing access.",
+                            "recommendation": "Ensure that token expiration and revocation mechanisms are in place to enhance security."
+                        },
+                        {
+                            "insight": "Error messages can potentially expose sensitive information.",
+                            "recommendation": "Standardize error messages to avoid revealing details about the internal workings of the API. For instance, instead of 'Blog not found', use a generic message like 'Resource not found'."
+                        }
+                    ],
+                    "optimization_insights": [
+                        {
+                            "insight": "The API currently returns a full blog object even when only a subset of fields may be needed.",
+                            "recommendation": "Implement query parameters to allow clients to specify which fields they want in the response, reducing payload size and improving performance."
+                        },
+                        {
+                            "insight": "The 'id' parameter is required and of type integer, which is efficient.",
+                            "recommendation": "Consider adding validation to ensure that the 'id' parameter is within a valid range to prevent unnecessary processing of invalid requests."
+                        }
+                    ],
+                    "additional_metadata": {
+                        "api_version": "1.0",
+                        "last_updated": "2023-10-02",
+                        "contact": {
+                            "name": "API Support",
+                            "email": "support@example.com"
+                        },
+                        "documentation_url": "https://api.example.com/docs"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a Blog",
+                "description": "This endpoint allows the user to delete a blog post by its ID. The user must be authenticated to perform this action. Upon successful deletion, a 204 No Content response is returned.",
+                "operationId": "deleteBlog",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The ID of the blog post to delete.",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Blog post deleted successfully.",
+                        "content": {}
+                    },
+                    "404": {
+                        "description": "Blog post not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "detail": {
+                                            "type": "string",
+                                            "example": "Blog post not found."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. User must be authenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "detail": {
+                                            "type": "string",
+                                            "example": "Not authenticated."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "Blog"
+                ],
+                "insights": {
+                    "performance_insights": [
+                        {
+                            "insight": "The API returns a 204 No Content response upon successful deletion, which is efficient as it minimizes payload size.",
+                            "recommendation": "Ensure that the server is optimized to handle DELETE requests efficiently, especially under high load."
+                        },
+                        {
+                            "insight": "The use of an integer ID for the blog post is efficient for lookups and deletions.",
+                            "recommendation": "Consider implementing caching strategies for frequently accessed blog posts to reduce database load."
+                        }
+                    ],
+                    "security_insights": [
+                        {
+                            "insight": "The endpoint requires authentication via Bearer token, which is a good practice for sensitive operations like deletion.",
+                            "recommendation": "Ensure that the token validation process is robust and that expired tokens are properly handled."
+                        },
+                        {
+                            "insight": "The API returns a 401 Unauthorized response for unauthenticated users.",
+                            "recommendation": "Consider implementing rate limiting on this endpoint to prevent abuse from unauthorized requests."
+                        }
+                    ],
+                    "optimization_insights": [
+                        {
+                            "insight": "The 404 response for a non-existent blog post provides a clear message to the user.",
+                            "recommendation": "Consider logging 404 responses for monitoring and analytics to identify potential issues with blog post IDs."
+                        },
+                        {
+                            "insight": "The API does not return any content on successful deletion, which is optimal for performance.",
+                            "recommendation": "Ensure that the deletion process is atomic to avoid partial deletions that could lead to data inconsistency."
+                        }
+                    ],
+                    "additional_metadata": {
+                        "operationId": "deleteBlog",
+                        "tags": [
+                            "Blog"
+                        ],
+                        "description": "This endpoint allows the user to delete a blog post by its ID. Ensure proper error handling and logging for better maintainability."
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update a Blog",
+                "description": "Updates an existing blog entry identified by its ID. This endpoint allows the user to modify the content of the blog. The user must be authenticated to perform this action.",
+                "operationId": "updateBlog",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The ID of the blog to be updated.",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Blog"
+                            },
+                            "examples": {
+                                "example1": {
+                                    "summary": "Example Blog Update",
+                                    "value": {
+                                        "title": "Updated Blog Title",
+                                        "content": "This is the updated content of the blog.",
+                                        "author": "Author Name"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "Blog successfully updated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Blog"
+                                },
+                                "examples": {
+                                    "example1": {
+                                        "summary": "Updated Blog Response",
+                                        "value": {
+                                            "id": 1,
+                                            "title": "Updated Blog Title",
+                                            "content": "This is the updated content of the blog.",
+                                            "author": "Author Name"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Blog not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "detail": {
+                                            "type": "string",
+                                            "example": "Blog not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized access.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "detail": {
+                                            "type": "string",
+                                            "example": "Not authenticated"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "insights": {
+                    "performance_insights": [
+                        {
+                            "insight": "Response Status Codes",
+                            "recommendation": "Ensure that the API responds with appropriate status codes for different scenarios. Currently, it uses 202 for successful updates, which is suitable for asynchronous processing. If the update is synchronous, consider using 200 OK instead."
+                        },
+                        {
+                            "insight": "Request Body Size",
+                            "recommendation": "Monitor the size of the request body, especially if large blog entries are expected. Implement size limits to prevent excessive load on the server."
+                        }
+                    ],
+                    "security_insights": [
+                        {
+                            "insight": "Authentication Requirement",
+                            "recommendation": "The API requires authentication via Bearer token, which is good. Ensure that the token is validated properly on the server-side to prevent unauthorized access."
+                        },
+                        {
+                            "insight": "Error Responses",
+                            "recommendation": "Ensure that the error messages returned (e.g., 'Not authenticated', 'Blog not found') do not expose sensitive information. Consider generic error messages for production environments."
+                        }
+                    ],
+                    "optimization_insights": [
+                        {
+                            "insight": "Schema Reusability",
+                            "recommendation": "The Blog schema is defined in components, which promotes reusability. Ensure that this schema is used consistently across other relevant endpoints to maintain a DRY (Don't Repeat Yourself) principle."
+                        },
+                        {
+                            "insight": "Caching Mechanism",
+                            "recommendation": "Consider implementing caching for frequently accessed blog entries to improve response times and reduce server load."
                         }
                     ],
                     "additional_metadata": {
@@ -551,9 +582,8 @@
                         "last_updated": "2023-10-01",
                         "contact_info": {
                             "email": "support@example.com",
-                            "phone": "+123456789"
-                        },
-                        "documentation_url": "https://api.example.com/docs"
+                            "documentation_url": "https://api.example.com/docs"
+                        }
                     }
                 }
             }
