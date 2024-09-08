@@ -202,12 +202,25 @@ export function Documentation({ apiSpec, activeEndpoint }) {
   );
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full overflow-y-auto pt-6">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-4">
-          <TabsTrigger value="formatted">Formatted Documentation</TabsTrigger>
-          <TabsTrigger value="raw">Raw Specification</TabsTrigger>
-        </TabsList>
+        <div className="mb-6">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <h1 className="text-2xl font-bold">{info.title}</h1>
+                <Badge color="bg-blue-100 text-blue-800">v{info.version}</Badge>
+              </div>
+              {info.description && (
+                <p className="text-gray-600 max-w-2xl">{info.description}</p>
+              )}
+            </div>
+            <TabsList>
+              <TabsTrigger value="formatted">Formatted</TabsTrigger>
+              <TabsTrigger value="raw">Raw</TabsTrigger>
+            </TabsList>
+          </div>
+        </div>
         <TabsContent value="formatted">
           <FormattedDocs />
         </TabsContent>
