@@ -1,8 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Header } from './header'
+import { Sidebar } from './sidebar'
 import { Specification } from './specification'
 import { Documentation } from './documentation'
-import { Sidebar } from './sidebar'
+
+// Remove these imports as they're not needed in the browser environment
+// import fs from 'fs/promises'
+// import path from 'path'
 
 function DocsGeneration() {
   const [parsedSpec, setParsedSpec] = useState(null)
@@ -18,7 +22,7 @@ function DocsGeneration() {
     try {
       const response = await fetch(`/static/${repoName}.json`)
       if (!response.ok) {
-        throw new Error('Failed to load specification')
+        throw new Error('Failed to fetch specification')
       }
       const data = await response.json()
       setParsedSpec(data)

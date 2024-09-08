@@ -10,11 +10,11 @@ function App() {
   return (
     <Router>
       <div className='flex flex-col w-full h-full'>
-        <nav>
+        {/* <nav>
           <ul>
             <li><Link to="/">Docs Generation</Link></li>
           </ul>
-        </nav>
+        </nav> */}
 
         <Routes>
           <Route path="/" element={<DocsGeneration />} />
