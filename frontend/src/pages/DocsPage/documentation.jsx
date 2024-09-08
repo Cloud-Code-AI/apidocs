@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ApiUsage } from './apiUsage';
 import { LightBulbIcon, ChartBarIcon, ArrowTrendingUpIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react';
 
 const Badge = ({ children, color }) => (
   <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${color} mr-2`}>
@@ -197,9 +198,11 @@ const EndpointSection = ({ id, method, servers, path, summary, description, para
   </section>
 );
 
-export function Documentation({ apiSpec, activeEndpoint, isProd }) {
-  const { info, servers, paths, components } = apiSpec;
+export function Documentation({ apiSpec, activeEndpoint, isProd, onSpecUpdate }) {
   const [activeTab, setActiveTab] = useState('formatted');
+  const [isEditing, setIsEditing] = useState(false);
+  const [error, setError] = useState(null);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     if (activeEndpoint) {
@@ -210,14 +213,60 @@ export function Documentation({ apiSpec, activeEndpoint, isProd }) {
     }
   }, [activeEndpoint]);
 
-  const FormattedDocs = () => (
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.value = JSON.stringify(apiSpec, null, 2);
+    }
+  }, [apiSpec]);
+
+  const handleEditSave = useCallback(() => {
+    if (isEditing) {
+      try {
+        const updatedSpec = JSON.parse(textareaRef.current.value);
+        onSpecUpdate(updatedSpec);
+        setError(null);
+        setIsEditing(false);
+      } catch (err) {
+        setError('Invalid JSON: ' + err.message);
+      }
+    } else {
+      setIsEditing(true);
+    }
+  }, [isEditing, onSpecUpdate]);
+
+  const EditSaveButton = () => (
+    <button
+      onClick={handleEditSave}
+      className={`
+        flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium
+        transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2
+        ${isEditing 
+          ? 'bg-green-800 hover:bg-green-900 text-white focus:ring-green-800' 
+          : 'bg-blue-800 hover:bg-blue-900 text-white focus:ring-blue-800'}
+      `}
+    >
+      {isEditing ? (
+        <>
+          <CheckIcon className="h-5 w-5 mr-2" />
+          Save Changes
+        </>
+      ) : (
+        <>
+          <PencilIcon className="h-5 w-5 mr-2" />
+          Edit Raw
+        </>
+      )}
+    </button>
+  );
+
+  const FormattedDocs = useCallback(() => (
     <>
-      {Object.entries(paths).map(([path, methods]) => 
+      {Object.entries(apiSpec.paths).map(([path, methods]) => 
         Object.entries(methods).map(([method, details]) => (
           <EndpointSection 
             key={`${method}-${path}`}
             id={`${method}-${path}`}
-            servers={servers}
+            servers={apiSpec.servers}
             method={method}
             path={path}
             {...details}
@@ -225,7 +274,7 @@ export function Documentation({ apiSpec, activeEndpoint, isProd }) {
               content: {
                 'application/json': {
                   schema: {
-                    properties: components.schemas[details.requestBody.content['application/json'].schema.$ref.split('/').pop()].properties
+                    properties: apiSpec.components.schemas[details.requestBody.content['application/json'].schema.$ref.split('/').pop()].properties
                   }
                 }
               }
@@ -235,13 +284,19 @@ export function Documentation({ apiSpec, activeEndpoint, isProd }) {
         ))
       )}
     </>
-  );
+  ), [apiSpec, isProd]);
 
-  const RawSpec = () => (
-    <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto">
-      {JSON.stringify(apiSpec, null, 2)}
-    </pre>
-  );
+  const RawSpec = useCallback(() => (
+    <div className="space-y-4">
+      <textarea
+        ref={textareaRef}
+        className="w-full h-[70vh] p-4 font-mono text-sm bg-gray-100 rounded-lg resize-none"
+        readOnly={!isEditing}
+        defaultValue={JSON.stringify(apiSpec, null, 2)}
+      />
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+    </div>
+  ), [isEditing, error, apiSpec]);
 
   return (
     <div className="h-full overflow-y-auto pt-6">
@@ -250,17 +305,20 @@ export function Documentation({ apiSpec, activeEndpoint, isProd }) {
           <div className="flex justify-between items-start mb-4">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <h1 className="text-2xl font-bold">{info.title}</h1>
-                <Badge color="bg-blue-100 text-blue-800">v{info.version}</Badge>
+                <h1 className="text-2xl font-bold">{apiSpec.info.title}</h1>
+                <Badge color="bg-blue-100 text-blue-800">v{apiSpec.info.version}</Badge>
               </div>
-              {info.description && (
-                <p className="text-gray-600 max-w-2xl">{info.description}</p>
+              {apiSpec.info.description && (
+                <p className="text-gray-600 max-w-2xl">{apiSpec.info.description}</p>
               )}
             </div>
-            <TabsList>
-              <TabsTrigger value="formatted">Formatted</TabsTrigger>
-              <TabsTrigger value="raw">Raw</TabsTrigger>
-            </TabsList>
+            <div className="flex items-center space-x-4">
+              {activeTab === 'raw' && <EditSaveButton />}
+              <TabsList>
+                <TabsTrigger value="formatted">Formatted</TabsTrigger>
+                <TabsTrigger value="raw">Raw</TabsTrigger>
+              </TabsList>
+            </div>
           </div>
         </div>
         <TabsContent value="formatted">

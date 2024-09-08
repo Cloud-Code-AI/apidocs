@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Header } from './header'
 import { Specification } from './specification'
 import { Documentation } from './documentation'
@@ -310,6 +310,12 @@ function DocsGeneration() {
     // You might want to scroll to the selected endpoint in the Documentation component
   }
 
+  const handleSpecUpdate = useCallback((updatedSpec) => {
+    setParsedSpec(updatedSpec);
+    // You might want to update the original spec string here as well
+    // setSpec(JSON.stringify(updatedSpec, null, 2));
+  }, []);
+
   useEffect(() => {
     // Initialize with sample data
     handleSpecificationChange(spec)
@@ -334,6 +340,7 @@ function DocsGeneration() {
                   apiSpec={parsedSpec} 
                   activeEndpoint={activeEndpoint} 
                   isProd={isProd}
+                  onSpecUpdate={handleSpecUpdate}
                 />
               ) : (
                 <p>Enter a valid OpenAPI specification to generate documentation.</p>
