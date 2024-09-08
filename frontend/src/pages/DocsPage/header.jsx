@@ -6,7 +6,7 @@ export function Header() {
     const Switch = ({ checked, onChange }) => (
         <div
         className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer ${
-            checked ? 'bg-blue-400' : 'bg-gray-400'
+            checked ? 'bg-green-700' : 'bg-gray-400'
         }`}
         onClick={() => onChange(!checked)}
         >
@@ -27,15 +27,13 @@ export function Header() {
           </div>
           <div className="flex items-center space-x-4">
             <p className="text-sm">Generate API Docs in minutes.</p>
-            {!isProd && (
-              <div className="flex items-center space-x-2">
-                <Switch
-                  checked={isProd}
-                  onChange={setIsProd}
-                />
-                <span className="text-sm">Dev</span>
-              </div>
-            )}
+            <div className="flex items-center space-x-2">
+              <Switch
+                checked={isProd}
+                onChange={setIsProd}
+              />
+              <span className="text-sm">{isProd ? 'Prod' : 'Dev'}</span>
+            </div>
           </div>
         </div>
       </header>
