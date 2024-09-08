@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ApiUsage } from './apiUsage';
+import { LightBulbIcon, ChartBarIcon, ArrowTrendingUpIcon } from '@heroicons/react/24/outline';
 
 const Badge = ({ children, color }) => (
   <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${color} mr-2`}>
@@ -151,27 +152,36 @@ const EndpointSection = ({ id, method, servers, path, summary, description, para
       )}
       
       {!isProd && rest.analysis_data && (
-        <div className="p-4 border-t border-gray-200">
-          <h4 className="font-semibold mb-2">Development Insights:</h4>
+        <div className="p-6 border-t border-gray-200 bg-gradient-to-br from-teal-50 to-cyan-50">
+          <h4 className="text-lg font-semibold mb-4 text-teal-700">Development Insights</h4>
           
           {rest.analysis_data.performance_insights && (
-            <div className="mb-3">
-              <h5 className="font-medium text-sm mb-1">Performance Insights:</h5>
-              <p className="text-sm text-gray-600">{rest.analysis_data.performance_insights}</p>
+            <div className="mb-4 bg-white rounded-lg p-4 shadow-sm border border-teal-100">
+              <h5 className="font-medium text-sm mb-2 flex items-center text-teal-600">
+                <ChartBarIcon className="h-5 w-5 mr-2" />
+                Performance Insights
+              </h5>
+              <p className="text-sm text-gray-700">{rest.analysis_data.performance_insights}</p>
             </div>
           )}
           
           {rest.analysis_data.optimization_suggestions && (
-            <div className="mb-3">
-              <h5 className="font-medium text-sm mb-1">Optimization Suggestions:</h5>
-              <p className="text-sm text-gray-600">{rest.analysis_data.optimization_suggestions}</p>
+            <div className="mb-4 bg-white rounded-lg p-4 shadow-sm border border-teal-100">
+              <h5 className="font-medium text-sm mb-2 flex items-center text-teal-600">
+                <ArrowTrendingUpIcon className="h-5 w-5 mr-2" />
+                Optimization Suggestions
+              </h5>
+              <p className="text-sm text-gray-700">{rest.analysis_data.optimization_suggestions}</p>
             </div>
           )}
           
           {rest.analysis_data.general_recommendations && rest.analysis_data.general_recommendations.length > 0 && (
-            <div>
-              <h5 className="font-medium text-sm mb-1">General Recommendations:</h5>
-              <ul className="list-disc pl-5 text-sm text-gray-600">
+            <div className="bg-white rounded-lg p-4 shadow-sm border border-teal-100">
+              <h5 className="font-medium text-sm mb-2 flex items-center text-teal-600">
+                <LightBulbIcon className="h-5 w-5 mr-2" />
+                General Recommendations
+              </h5>
+              <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
                 {rest.analysis_data.general_recommendations.map((recommendation, index) => (
                   <li key={index}>{recommendation}</li>
                 ))}
