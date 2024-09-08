@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Header } from './header'
 import { Specification } from './specification'
 import { Documentation } from './documentation'
-import { ApiUsage } from './apiUsage'
+import { Sidebar } from './sidebar'
 
 // Sample OpenAPI specification
 const sampleSpec = {
@@ -255,6 +255,7 @@ const sampleSpec = {
 function DocsGeneration() {
   const [spec, setSpec] = useState(JSON.stringify(sampleSpec, null, 2))
   const [parsedSpec, setParsedSpec] = useState(sampleSpec)
+  const [activeEndpoint, setActiveEndpoint] = useState(null)
 
   const handleSpecificationChange = (newSpec) => {
     setSpec(newSpec)
@@ -267,28 +268,36 @@ function DocsGeneration() {
     }
   }
 
+  const handleEndpointClick = (endpointId) => {
+    setActiveEndpoint(endpointId)
+    // You might want to scroll to the selected endpoint in the Documentation component
+  }
+
   useEffect(() => {
     // Initialize with sample data
     handleSpecificationChange(spec)
   }, [])
 
   return (
-    <div className="w-full">
+    <div className="w-full h-screen flex flex-col">
       <Header />
-      <main className="max-w-wull mx-auto px-12 py-8">
-        <div className="mb-6">
-          <Specification 
-            specification={spec} 
-            setSpecification={handleSpecificationChange} 
-          />
-        </div>
-        <div className="flex flex-col lg:flex-row gap-6">
-          <div className="lg:w-full">
-            {parsedSpec ? (
-              <Documentation apiSpec={parsedSpec} />
-            ) : (
-              <p>Enter a valid OpenAPI specification to generate documentation.</p>
-            )}
+      <main className="flex-1 flex overflow-hidden">
+        <Sidebar apiSpec={parsedSpec} onEndpointClick={handleEndpointClick} />
+        <div className="flex-1 overflow-y-auto px-12 py-8">
+          <div className="mb-6">
+            <Specification 
+              specification={spec} 
+              setSpecification={handleSpecificationChange} 
+            />
+          </div>
+          <div className="flex flex-col lg:flex-row gap-6">
+            <div className="lg:w-full">
+              {parsedSpec ? (
+                <Documentation apiSpec={parsedSpec} activeEndpoint={activeEndpoint} />
+              ) : (
+                <p>Enter a valid OpenAPI specification to generate documentation.</p>
+              )}
+            </div>
           </div>
         </div>
       </main>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -92,8 +92,8 @@ const Parameter = ({ param }) => {
   );
 };
 
-const EndpointSection = ({ method, servers, path, summary, description, parameters, requestBody, security }) => (
-  <section className="mb-8 flex flex-col lg:flex-row gap-6">
+const EndpointSection = ({ id, method, servers, path, summary, description, parameters, requestBody, security }) => (
+  <section id={id} className="mb-8 flex flex-col lg:flex-row gap-6">
     <div className="lg:w-[70%] border border-gray-200 rounded-lg overflow-hidden">
       <div className="bg-gray-50 p-4 border-b border-gray-200">
         <h3 className="text-xl font-semibold mb-2">{summary}</h3>
@@ -140,9 +140,18 @@ const EndpointSection = ({ method, servers, path, summary, description, paramete
   </section>
 );
 
-export function Documentation({ apiSpec }) {
+export function Documentation({ apiSpec, activeEndpoint }) {
   const { info, servers, paths, components } = apiSpec;
   const [activeTab, setActiveTab] = useState('formatted');
+
+  useEffect(() => {
+    if (activeEndpoint) {
+      const element = document.getElementById(activeEndpoint);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [activeEndpoint]);
 
   const FormattedDocs = () => (
     <>
@@ -150,6 +159,7 @@ export function Documentation({ apiSpec }) {
         Object.entries(methods).map(([method, details]) => (
           <EndpointSection 
             key={`${method}-${path}`}
+            id={`${method}-${path}`}
             servers={servers}
             method={method}
             path={path}
