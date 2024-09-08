@@ -4,7 +4,7 @@ import { Specification } from './specification'
 import { Documentation } from './documentation'
 import { Sidebar } from './sidebar'
 
-// Sample OpenAPI specification
+// Sample OpenAPI specification with added analysis data
 const sampleSpec = {
   "openapi": "3.0.3",
   "info": {
@@ -58,6 +58,15 @@ const sampleSpec = {
               }
             }
           }
+        },
+        "analysis_data": {
+          "performance_insights": "Average response time: 150ms. Consider implementing pagination for large result sets.",
+          "optimization_suggestions": "Add caching for frequently requested planet lists to reduce database load.",
+          "general_recommendations": [
+            "Implement proper database indexing on the 'type' field for faster filtering",
+            "Use a caching mechanism (e.g., Redis) for frequently accessed planet lists",
+            "Consider implementing GraphQL for more flexible querying options"
+          ]
         }
       },
       "post": {
@@ -92,6 +101,15 @@ const sampleSpec = {
           "401": {
             "description": "Unauthorized"
           }
+        },
+        "analysis_data": {
+          "performance_insights": "Average creation time: 200ms. Bulk creation might be beneficial for multiple planets.",
+          "optimization_suggestions": "Implement batch processing for creating multiple planets simultaneously.",
+          "general_recommendations": [
+            "Use database transactions to ensure data integrity during planet creation",
+            "Implement input validation and sanitization to prevent invalid data entry",
+            "Consider using a message queue for asynchronous processing of planet creation tasks"
+          ]
         }
       }
     },
@@ -133,6 +151,15 @@ const sampleSpec = {
           "404": {
             "description": "Planet not found"
           }
+        },
+        "analysis_data": {
+          "performance_insights": "Average response time: 80ms. Performance is good, but could be improved for planets with many moons.",
+          "optimization_suggestions": "Implement lazy loading for detailed moon information when 'include-moons' is true.",
+          "general_recommendations": [
+            "Use caching for frequently accessed planet details",
+            "Optimize database queries for retrieving moon information",
+            "Consider implementing a separate endpoint for detailed moon information to reduce payload size"
+          ]
         }
       },
       "patch": {
@@ -180,6 +207,15 @@ const sampleSpec = {
           "404": {
             "description": "Planet not found"
           }
+        },
+        "analysis_data": {
+          "performance_insights": "Average update time: 120ms. Consider optimizing for partial updates.",
+          "optimization_suggestions": "Implement partial updates to avoid unnecessary field updates and improve performance.",
+          "general_recommendations": [
+            "Use database transactions to ensure data consistency during updates",
+            "Implement proper error handling and rollback mechanisms for failed updates",
+            "Consider using optimistic locking to handle concurrent updates"
+          ]
         }
       }
     }
@@ -256,6 +292,7 @@ function DocsGeneration() {
   const [spec, setSpec] = useState(JSON.stringify(sampleSpec, null, 2))
   const [parsedSpec, setParsedSpec] = useState(sampleSpec)
   const [activeEndpoint, setActiveEndpoint] = useState(null)
+  const [isProd, setIsProd] = useState(false)
 
   const handleSpecificationChange = (newSpec) => {
     setSpec(newSpec)
@@ -280,7 +317,7 @@ function DocsGeneration() {
 
   return (
     <div className="w-full h-screen flex flex-col">
-      <Header />
+      <Header isProd={isProd} setIsProd={setIsProd} />
       <main className="flex-1 flex overflow-hidden">
         <Sidebar apiSpec={parsedSpec} onEndpointClick={handleEndpointClick} />
         <div className="flex-1 overflow-y-auto p-8">
@@ -293,7 +330,11 @@ function DocsGeneration() {
           <div className="flex flex-col lg:flex-row gap-6">
             <div className="lg:w-full">
               {parsedSpec ? (
-                <Documentation apiSpec={parsedSpec} activeEndpoint={activeEndpoint} />
+                <Documentation 
+                  apiSpec={parsedSpec} 
+                  activeEndpoint={activeEndpoint} 
+                  isProd={isProd}
+                />
               ) : (
                 <p>Enter a valid OpenAPI specification to generate documentation.</p>
               )}

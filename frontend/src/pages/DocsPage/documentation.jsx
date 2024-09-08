@@ -108,7 +108,7 @@ const Parameter = ({ param }) => {
   );
 };
 
-const EndpointSection = ({ id, method, servers, path, summary, description, parameters, requestBody, security }) => (
+const EndpointSection = ({ id, method, servers, path, summary, description, parameters, requestBody, security, isProd, ...rest }) => (
   <section id={id} className="mb-8 flex flex-col lg:flex-row gap-6">
     <div className="lg:w-[65%] border border-gray-200 rounded-lg overflow-hidden">
       <div className="bg-gray-50 p-4 border-b border-gray-200">
@@ -149,6 +149,37 @@ const EndpointSection = ({ id, method, servers, path, summary, description, para
           </ul>
         </div>
       )}
+      
+      {!isProd && rest.analysis_data && (
+        <div className="p-4 border-t border-gray-200">
+          <h4 className="font-semibold mb-2">Development Insights:</h4>
+          
+          {rest.analysis_data.performance_insights && (
+            <div className="mb-3">
+              <h5 className="font-medium text-sm mb-1">Performance Insights:</h5>
+              <p className="text-sm text-gray-600">{rest.analysis_data.performance_insights}</p>
+            </div>
+          )}
+          
+          {rest.analysis_data.optimization_suggestions && (
+            <div className="mb-3">
+              <h5 className="font-medium text-sm mb-1">Optimization Suggestions:</h5>
+              <p className="text-sm text-gray-600">{rest.analysis_data.optimization_suggestions}</p>
+            </div>
+          )}
+          
+          {rest.analysis_data.general_recommendations && rest.analysis_data.general_recommendations.length > 0 && (
+            <div>
+              <h5 className="font-medium text-sm mb-1">General Recommendations:</h5>
+              <ul className="list-disc pl-5 text-sm text-gray-600">
+                {rest.analysis_data.general_recommendations.map((recommendation, index) => (
+                  <li key={index}>{recommendation}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
     </div>
     <div className="lg:w-[35%]">
       <ApiUsage apiSpec={{ servers: servers, paths: { [path]: { [method]: { parameters, requestBody } } } }} />
@@ -156,7 +187,7 @@ const EndpointSection = ({ id, method, servers, path, summary, description, para
   </section>
 );
 
-export function Documentation({ apiSpec, activeEndpoint }) {
+export function Documentation({ apiSpec, activeEndpoint, isProd }) {
   const { info, servers, paths, components } = apiSpec;
   const [activeTab, setActiveTab] = useState('formatted');
 
@@ -189,6 +220,7 @@ export function Documentation({ apiSpec, activeEndpoint }) {
                 }
               }
             }}
+            isProd={isProd}
           />
         ))
       )}

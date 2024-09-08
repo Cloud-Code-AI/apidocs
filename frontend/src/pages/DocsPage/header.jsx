@@ -1,7 +1,6 @@
 import { useState } from "react"
 
-export function Header() {
-    const [isProd, setIsProd] = useState(false)
+export function Header({ isProd, setIsProd }) {
     // Custom Switch component
     const Switch = ({ checked, onChange }) => (
         <div
