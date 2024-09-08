@@ -276,7 +276,7 @@ function DocsGeneration() {
   return (
     <div className="w-full">
       <Header />
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-wull mx-auto px-12 py-8">
         <div className="mb-6">
           <Specification 
             specification={spec} 
@@ -284,14 +284,14 @@ function DocsGeneration() {
           />
         </div>
         <div className="flex flex-col lg:flex-row gap-6">
-          <div className="lg:w-[65%]">
+          <div className="lg:w-[70%]">
             {parsedSpec ? (
               <Documentation apiSpec={parsedSpec} />
             ) : (
               <p>Enter a valid OpenAPI specification to generate documentation.</p>
             )}
           </div>
-          <div className="lg:w-[35%]">
+          <div className="lg:w-[30%]">
             <ApiUsage apiSpec={parsedSpec} />
           </div>
         </div>
