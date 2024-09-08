@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Header } from './header'
 import { Sidebar } from './sidebar'
 import { Specification } from './specification'
@@ -9,18 +10,20 @@ import { Documentation } from './documentation'
 // import path from 'path'
 
 function DocsGeneration() {
+  const [searchParams] = useSearchParams()
   const [parsedSpec, setParsedSpec] = useState(null)
   const [activeEndpoint, setActiveEndpoint] = useState(null)
   const [isProd, setIsProd] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  const loadSpecification = useCallback(async (repoName) => {
+  const loadSpecification = useCallback(async (fileName) => {
     setIsLoading(true)
     setError(null)
 
     try {
-      const response = await fetch(`/static/${repoName}.json`)
+      console.log(fileName)
+      const response = await fetch(`https://api.akiradocs.com/static/${fileName}`)
       if (!response.ok) {
         throw new Error('Failed to fetch specification')
       }
@@ -34,6 +37,13 @@ function DocsGeneration() {
       setIsLoading(false)
     }
   }, [])
+
+  useEffect(() => {
+    const fileName = searchParams.get('file')
+    if (fileName) {
+      loadSpecification(fileName)
+    }
+  }, [searchParams, loadSpecification])
 
   const handleSpecificationGenerated = useCallback((repoName) => {
     loadSpecification(repoName)
@@ -78,8 +88,8 @@ function DocsGeneration() {
                 />
               ) : !isProd ? (
                 <div className="text-center py-12">
-                  <p className="text-xl text-gray-600">Enter a GitHub URL to generate API documentation.</p>
-                  <p className="text-sm text-gray-400 mt-2">Once you submit a valid URL, your API documentation will appear here.</p>
+                  <p className="text-xl text-gray-600">Enter a file name or use the URL parameter to generate API documentation.</p>
+                  <p className="text-sm text-gray-400 mt-2">Once a valid file is specified, your API documentation will appear here.</p>
                 </div>
               ) : null}
             </div>

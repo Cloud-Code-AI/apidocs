@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PencilIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, CheckIcon, LightBulbIcon, ChartBarIcon, ArrowTrendingUpIcon, ShieldCheckIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ApiUsage } from './apiUsage';
-import { LightBulbIcon, ChartBarIcon, ArrowTrendingUpIcon, ShieldCheckIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react';
 
 const Badge = ({ children, color }) => (
@@ -110,150 +109,127 @@ const Parameter = ({ param }) => {
   );
 };
 
-const EndpointSection = ({ id, method, servers, path, summary, description, parameters, requestBody, security, isProd, insights, ...rest }) => {
-  const filteredParameters = parameters?.filter(param => param.name || param.description || param.required);
-  
-  const filteredRequestBodyProperties = requestBody?.content?.['application/json']?.schema?.properties
-    ? Object.entries(requestBody.content['application/json'].schema.properties)
-      .filter(([_, value]) => value.type || value.description)
-    : [];
-
-  const filteredPerformanceInsights = insights?.performance_insights?.filter(insight => insight.insight || insight.recommendation) || [];
-  const filteredSecurityInsights = insights?.security_insights?.filter(insight => insight.insight || insight.recommendation) || [];
-  const filteredOptimizationInsights = insights?.optimization_insights?.filter(insight => insight.insight || insight.recommendation) || [];
-  const filteredAdditionalMetadata = insights?.additional_metadata
-    ? Object.entries(insights.additional_metadata).filter(([_, value]) => value !== null && value !== undefined && value !== '')
-    : [];
-
-  const hasInsights = !isProd && (
-    filteredPerformanceInsights.length > 0 ||
-    filteredSecurityInsights.length > 0 ||
-    filteredOptimizationInsights.length > 0 ||
-    filteredAdditionalMetadata.length > 0
-  );
-
-  return (
-    <section id={id} className="mb-8 flex flex-col lg:flex-row gap-6">
-      <div className="lg:w-[65%] h-full border border-gray-200 rounded-lg overflow-hidden">
-        <div className="bg-gray-50 p-4 border-b border-gray-200">
-          {summary && <h3 className="text-xl font-semibold mb-2">{summary}</h3>}
-          <p className="text-muted-foreground mb-2 flex items-center">
-            <MethodBadge method={method} />
-            <code className="ml-2 text-sm bg-gray-200 px-2 py-1 rounded">{path}</code>
-          </p>
-          {description && <p className="text-sm text-gray-600">{description}</p>}
-          {security && security.length > 0 && (
-            <p className="mt-2"><Badge color="bg-yellow-100 text-yellow-800">Requires Authentication</Badge></p>
+const EndpointSection = ({ id, method, servers, path, summary, description, parameters, requestBody, security, isProd, insights, ...rest }) => (
+  <section id={id} className="mb-8 flex flex-col lg:flex-row gap-6">
+    <div className="lg:w-[65%] h-full border border-gray-200 rounded-lg overflow-hidden">
+      <div className="bg-gray-50 p-4 border-b border-gray-200">
+        <h3 className="text-xl font-semibold mb-2">{summary}</h3>
+        <p className="text-muted-foreground mb-2 flex items-center">
+          <MethodBadge method={method} />
+          <code className="ml-2 text-sm bg-gray-200 px-2 py-1 rounded">{path}</code>
+        </p>
+        <p className="text-sm text-gray-600">{description}</p>
+        {security && security.length > 0 && (
+          <p className="mt-2"><Badge color="bg-yellow-100 text-yellow-800">Requires Authentication</Badge></p>
+        )}
+      </div>
+      
+      {parameters && parameters.length > 0 && (
+        <div className="p-4">
+          <h4 className="font-semibold mb-3">Parameters:</h4>
+          <ul className="space-y-2">
+            {parameters.map((param, index) => (
+              <Parameter key={index} param={param} />
+            ))}
+          </ul>
+        </div>
+      )}
+      
+      {/* {requestBody && (
+        <div className="p-4 border-t border-gray-200">
+          <h4 className="font-semibold mb-2">Request Body:</h4>
+          <p className="text-sm">JSON object containing:</p>
+          <ul className="list-disc pl-5 mt-2 space-y-1">
+            {Object.entries(requestBody.content['application/json'].schema.properties).map(([key, value]) => (
+              <li key={key} className="text-sm">
+                <code className="bg-gray-100 px-1 py-0.5 rounded">{key}</code>
+                {value.type && <span className="text-gray-600 ml-2">({value.type})</span>}
+                {value.description && <span className="text-gray-600 ml-2">- {value.description}</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )} */}
+      
+      {!isProd && insights && (
+        <div className="p-6 border-t border-gray-200 bg-gradient-to-br from-teal-50 to-cyan-50">
+          <h4 className="text-lg font-semibold mb-4 text-teal-700">Development Insights</h4>
+          
+          {insights.performance_insights && (
+            <div className="mb-4 bg-white rounded-lg p-4 shadow-sm border border-teal-100">
+              <h5 className="font-medium text-sm mb-2 flex items-center text-teal-600">
+                <ChartBarIcon className="h-5 w-5 mr-2" />
+                Performance Insights
+              </h5>
+              <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                {insights.performance_insights.map((insight, index) => (
+                  <li key={index}>
+                    <strong>{insight.insight}:</strong> {insight.recommendation}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {insights.security_insights && (
+            <div className="mb-4 bg-white rounded-lg p-4 shadow-sm border border-teal-100">
+              <h5 className="font-medium text-sm mb-2 flex items-center text-teal-600">
+                <ShieldCheckIcon className="h-5 w-5 mr-2" />
+                Security Insights
+              </h5>
+              <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                {insights.security_insights.map((insight, index) => (
+                  <li key={index}>
+                    <strong>{insight.insight}:</strong> {insight.recommendation}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {insights.optimization_insights && (
+            <div className="mb-4 bg-white rounded-lg p-4 shadow-sm border border-teal-100">
+              <h5 className="font-medium text-sm mb-2 flex items-center text-teal-600">
+                <ArrowTrendingUpIcon className="h-5 w-5 mr-2" />
+                Optimization Insights
+              </h5>
+              <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                {insights.optimization_insights.map((insight, index) => (
+                  <li key={index}>
+                    <strong>{insight.insight}:</strong> {insight.recommendation}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {insights.additional_metadata && (
+            <div className="bg-white rounded-lg p-4 shadow-sm border border-teal-100">
+              <h5 className="font-medium text-sm mb-2 flex items-center text-teal-600">
+                <InformationCircleIcon className="h-5 w-5 mr-2" />
+                Additional Metadata
+              </h5>
+              <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                {Object.entries(insights.additional_metadata).map(([key, value]) => (
+                  <li key={key}>
+                    <strong>{key}:</strong> {
+                      typeof value === 'object' 
+                        ? JSON.stringify(value) 
+                        : value
+                    }
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
-        
-        {filteredParameters.length > 0 && (
-          <div className="p-4">
-            <h4 className="font-semibold mb-3">Parameters:</h4>
-            <ul className="space-y-2">
-              {filteredParameters.map((param, index) => (
-                <Parameter key={index} param={param} />
-              ))}
-            </ul>
-          </div>
-        )}
-        
-        {filteredRequestBodyProperties.length > 0 && (
-          <div className="p-4 border-t border-gray-200">
-            <h4 className="font-semibold mb-2">Request Body:</h4>
-            <p className="text-sm">JSON object containing:</p>
-            <ul className="list-disc pl-5 mt-2 space-y-1">
-              {filteredRequestBodyProperties.map(([key, value]) => (
-                <li key={key} className="text-sm">
-                  <code className="bg-gray-100 px-1 py-0.5 rounded">{key}</code>
-                  {value.type && <span className="text-gray-600 ml-2">({value.type})</span>}
-                  {value.description && <span className="text-gray-600 ml-2">- {value.description}</span>}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        
-        {hasInsights && (
-          <div className="p-6 border-t border-gray-200 bg-gradient-to-br from-teal-50 to-cyan-50">
-            <h4 className="text-lg font-semibold mb-4 text-teal-700">Development Insights</h4>
-            
-            {filteredPerformanceInsights.length > 0 && (
-              <div className="mb-4 bg-white rounded-lg p-4 shadow-sm border border-teal-100">
-                <h5 className="font-medium text-sm mb-2 flex items-center text-teal-600">
-                  <ChartBarIcon className="h-5 w-5 mr-2" />
-                  Performance Insights
-                </h5>
-                <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
-                  {filteredPerformanceInsights.map((insight, index) => (
-                    <li key={index}>
-                      {insight.insight && <strong>{insight.insight}:</strong>} {insight.recommendation}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
-            {filteredSecurityInsights.length > 0 && (
-              <div className="mb-4 bg-white rounded-lg p-4 shadow-sm border border-teal-100">
-                <h5 className="font-medium text-sm mb-2 flex items-center text-teal-600">
-                  <ShieldCheckIcon className="h-5 w-5 mr-2" />
-                  Security Insights
-                </h5>
-                <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
-                  {filteredSecurityInsights.map((insight, index) => (
-                    <li key={index}>
-                      {insight.insight && <strong>{insight.insight}:</strong>} {insight.recommendation}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
-            {filteredOptimizationInsights.length > 0 && (
-              <div className="mb-4 bg-white rounded-lg p-4 shadow-sm border border-teal-100">
-                <h5 className="font-medium text-sm mb-2 flex items-center text-teal-600">
-                  <ArrowTrendingUpIcon className="h-5 w-5 mr-2" />
-                  Optimization Insights
-                </h5>
-                <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
-                  {filteredOptimizationInsights.map((insight, index) => (
-                    <li key={index}>
-                      {insight.insight && <strong>{insight.insight}:</strong>} {insight.recommendation}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
-            {filteredAdditionalMetadata.length > 0 && (
-              <div className="bg-white rounded-lg p-4 shadow-sm border border-teal-100">
-                <h5 className="font-medium text-sm mb-2 flex items-center text-teal-600">
-                  <InformationCircleIcon className="h-5 w-5 mr-2" />
-                  Additional Metadata
-                </h5>
-                <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
-                  {filteredAdditionalMetadata.map(([key, value]) => (
-                    <li key={key}>
-                      <strong>{key}:</strong> {
-                        typeof value === 'object' 
-                          ? JSON.stringify(value) 
-                          : value
-                      }
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-      <div className="lg:w-[35%]">
-        <ApiUsage apiSpec={{ servers: servers, paths: { [path]: { [method]: { parameters, requestBody } } } }} />
-      </div>
-    </section>
-  );
-};
+      )}
+    </div>
+    <div className="lg:w-[35%]">
+      <ApiUsage apiSpec={{ servers: servers, paths: { [path]: { [method]: { parameters, requestBody } } } }} />
+    </div>
+  </section>
+);
 
 export function Documentation({ apiSpec, activeEndpoint, isProd, onSpecUpdate }) {
   const [activeTab, setActiveTab] = useState('formatted');
@@ -327,15 +303,15 @@ export function Documentation({ apiSpec, activeEndpoint, isProd, onSpecUpdate })
             method={method}
             path={path}
             {...details}
-            requestBody={details.requestBody && {
-              content: {
-                'application/json': {
-                  schema: {
-                    properties: apiSpec.components.schemas[details.requestBody.content['application/json'].schema.$ref.split('/').pop()].properties
-                  }
-                }
-              }
-            }}
+            // requestBody={details.requestBody && {
+            //   content: {
+            //     'application/json': {
+            //       schema: {
+            //         properties: apiSpec.components.schemas[details.requestBody.content['application/json'].schema.$ref.split('/').pop()].properties
+            //       }
+            //     }
+            //   }
+            // }}
             isProd={isProd}
           />
         ))
@@ -354,10 +330,6 @@ export function Documentation({ apiSpec, activeEndpoint, isProd, onSpecUpdate })
       {error && <p className="text-red-500 text-sm">{error}</p>}
     </div>
   ), [isEditing, error, apiSpec]);
-
-  if (!apiSpec || !apiSpec.paths) {
-    return null; // Return null if there's no data to display
-  }
 
   return (
     <div className="h-full overflow-y-auto pt-6">
