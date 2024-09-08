@@ -2,10 +2,6 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom'
 import DocsGeneration from './pages/DocsPage/DocsGeneration'
 import './App.css'
 
-function Home() {
-  return <h1>Welcome to the Home Page</h1>
-}
-
 function App() {
   return (
     <Router>
