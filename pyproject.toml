@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "akiradocs"
+version = "0.1.0"
+description = "AI powered API Docs and Testing"
+authors = ["Saurav Panda <sgp65@cornell.edu>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+kaizen-cloudcode = "^0.4.9"
+pygithub = "^2.4.0"
+tree-sitter-python = "^0.23.2"
+tree-sitter-javascript = "^0.23.0"
+tree-sitter-typescript = "^0.23.0"
+tree-sitter-rust = "^0.23.0"
+tree-sitter-languages = "^1.10.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

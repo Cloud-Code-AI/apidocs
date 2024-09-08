@@ -1,0 +1,256 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Generated API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/items/{item_id}": {
+      "get": {
+        "summary": "Retrieve an item by its ID",
+        "description": "This endpoint retrieves an item based on the provided item ID. The response includes the item ID and a name generated based on the item ID.",
+        "operationId": "getItemById",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "description": "The unique identifier for the item to retrieve.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response containing the item details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "item_id": {
+                      "type": "integer",
+                      "description": "The unique identifier of the item.",
+                      "example": 1
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the item.",
+                      "example": "Item 1"
+                    }
+                  },
+                  "required": [
+                    "item_id",
+                    "name"
+                  ]
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "Example response for item ID 1",
+                    "value": {
+                      "item_id": 1,
+                      "name": "Item 1"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Item not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string",
+                      "description": "Error message indicating that the item was not found.",
+                      "example": "Item not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Items"
+        ],
+        "deprecated": false
+      }
+    },
+    "/api/items": {
+      "post": {
+        "summary": "Create a new item",
+        "description": "This endpoint allows users to create a new item in the system. The item details must be provided in the request body. Upon successful creation, the server will return the created item along with a success message.",
+        "operationId": "createItem",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Item"
+              },
+              "examples": {
+                "example1": {
+                  "summary": "A sample item",
+                  "value": {
+                    "name": "Sample Item",
+                    "description": "This is a sample item for demonstration purposes.",
+                    "price": 19.99
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Item created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "item": {
+                      "$ref": "#/components/schemas/Item"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Item created successfully"
+                    }
+                  }
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "Successful item creation response",
+                    "value": {
+                      "item": {
+                        "name": "Sample Item",
+                        "description": "This is a sample item for demonstration purposes.",
+                        "price": 19.99
+                      },
+                      "message": "Item created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid item data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Invalid item data"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Items"
+        ]
+      }
+    },
+    "/api/calculate": {
+      "get": {
+        "summary": "Calculate sum and product",
+        "description": "This endpoint takes two integers, `x` and `y`, and returns their sum and product.",
+        "operationId": "calculate",
+        "parameters": [
+          {
+            "name": "x",
+            "in": "query",
+            "required": true,
+            "description": "The first integer to be used in the calculation.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "y",
+            "in": "query",
+            "required": true,
+            "description": "The second integer to be used in the calculation.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response containing the sum and product of the two integers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sum": {
+                      "type": "integer",
+                      "description": "The sum of the two integers."
+                    },
+                    "product": {
+                      "type": "integer",
+                      "description": "The product of the two integers."
+                    }
+                  },
+                  "required": [
+                    "sum",
+                    "product"
+                  ]
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "Example response",
+                    "value": {
+                      "sum": 7,
+                      "product": 12
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Error message detailing the issue."
+                    }
+                  }
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "Example error response",
+                    "value": {
+                      "error": "Invalid input: x and y must be integers."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  }
+}
