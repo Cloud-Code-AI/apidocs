@@ -1,31 +1,68 @@
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+
+const Badge = ({ children, color }) => (
+  <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${color} mr-2`}>
+    {children}
+  </span>
+);
+
+const Parameter = ({ param }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <li className="mb-2">
+      <div className="flex items-center cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+        {isExpanded ? (
+          <ChevronDownIcon className="h-4 w-4 mr-1" />
+        ) : (
+          <ChevronRightIcon className="h-4 w-4 mr-1" />
+        )}
+        <strong>{param.name}</strong>
+        <span className="ml-2">
+          <Badge color={param.in === 'query' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'}>
+            {param.in}
+          </Badge>
+          {param.required && (
+            <Badge color="bg-red-100 text-red-800">required</Badge>
+          )}
+        </span>
+      </div>
+      {isExpanded && (
+        <div className="mt-1 ml-5 text-sm text-gray-600">
+          <p>{param.description}</p>
+          {param.schema && param.schema.enum && (
+            <p className="mt-1">Possible values: {param.schema.enum.join(', ')}</p>
+          )}
+          {param.schema && param.schema.default && (
+            <p className="mt-1">Default: {param.schema.default}</p>
+          )}
+        </div>
+      )}
+    </li>
+  );
+};
 
 const EndpointSection = ({ method, path, summary, description, parameters, requestBody, security }) => (
   <section className="mb-6">
     <h3 className="text-xl font-semibold mb-2">{summary}</h3>
-    <p className="text-muted-foreground mb-2">{method.toUpperCase()} {path}</p>
+    <p className="text-muted-foreground mb-2">
+      <Badge color="bg-blue-100 text-blue-800">{method.toUpperCase()}</Badge>
+      {path}
+    </p>
     <p className="mb-2">{description}</p>
     
     {security && security.length > 0 && (
-      <p className="mb-2"><strong>Note:</strong> Requires authentication</p>
+      <p className="mb-2"><Badge color="bg-yellow-100 text-yellow-800">Requires Authentication</Badge></p>
     )}
     
     {parameters && parameters.length > 0 && (
       <>
         <h4 className="font-semibold mt-3 mb-2">Parameters:</h4>
-        <ul className="list-disc pl-5 mb-2">
+        <ul className="list-none pl-2 mb-2">
           {parameters.map((param, index) => (
-            <li key={index}>
-              <strong>{param.name}</strong> ({param.in}, {param.required ? 'required' : 'optional'}): 
-              {param.description}
-              {param.schema && param.schema.enum && (
-                <span> ({param.schema.enum.join(', ')})</span>
-              )}
-              {param.schema && param.schema.default && (
-                <span> (default: {param.schema.default})</span>
-              )}
-            </li>
+            <Parameter key={index} param={param} />
           ))}
         </ul>
       </>
