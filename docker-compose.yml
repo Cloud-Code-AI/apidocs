@@ -1,6 +1,7 @@
 version: '3'
 services:
   backend:
+    container_name: backend
     build:
       context: .
       dockerfile: Dockerfile
@@ -16,6 +17,7 @@ services:
       - app-network
 
   frontend:
+    container_name: frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -39,7 +41,7 @@ services:
       - frontend
     volumes:
       - custom_file:/var/www/html
-      - ./nginx-conf.dev:/etc/nginx/conf.d
+      - ./nginx-conf:/etc/nginx/conf.d
       - certbot-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
     depends_on:
