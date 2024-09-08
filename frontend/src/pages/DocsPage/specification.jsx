@@ -30,14 +30,13 @@ export function Specification({ onSpecificationGenerated, isProd }) {
         throw new Error('Failed to generate specification')
       }
 
-      const data = await response.json()
-      const fileName = data.fileName // Assuming the API returns the generated file name
+      const fileName = url.split('/').replace('.git', '.json') // Assuming the API returns the generated file name
 
       if (!fileName) {
         throw new Error('No file name returned from the API')
       }
 
-      onSpecificationGenerated(fileName)
+      // onSpecificationGenerated(fileName)
       
       // Redirect to the URL with the file name as a parameter
       navigate(`?file=${fileName}`)
