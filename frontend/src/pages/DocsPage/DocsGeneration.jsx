@@ -28,6 +28,7 @@ function DocsGeneration() {
         throw new Error('Failed to fetch specification')
       }
       const data = await response.json()
+      console.log(data)
       setParsedSpec(data)
     } catch (error) {
       console.error('Failed to load specification:', error)

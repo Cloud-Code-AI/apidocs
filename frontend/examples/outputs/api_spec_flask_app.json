@@ -1,0 +1,269 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Generated API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/hello": {
+      "get": {
+        "summary": "Greeting Endpoint",
+        "description": "This endpoint returns a simple greeting message. It is designed to demonstrate a basic API response in JSON format.",
+        "operationId": "getHello",
+        "responses": {
+          "200": {
+            "description": "A successful response containing a greeting message.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Hello, World!"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "A standard greeting",
+                    "value": {
+                      "message": "Hello, World!"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "An unexpected error occurred."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Greeting"
+        ]
+      }
+    },
+    "/api/echo": {
+      "post": {
+        "summary": "Echo back the provided JSON data",
+        "description": "This endpoint receives a JSON payload and returns the same data in the response. It is useful for testing and debugging purposes.",
+        "operationId": "echoData",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "description": "The JSON object to be echoed back."
+              },
+              "examples": {
+                "example1": {
+                  "summary": "Simple JSON object",
+                  "value": {
+                    "message": "Hello, World!",
+                    "status": "success"
+                  }
+                },
+                "example2": {
+                  "summary": "Complex JSON object",
+                  "value": {
+                    "user": {
+                      "id": 1,
+                      "name": "John Doe"
+                    },
+                    "items": [
+                      {
+                        "id": 101,
+                        "name": "Item 1"
+                      },
+                      {
+                        "id": 102,
+                        "name": "Item 2"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with echoed data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "description": "The echoed JSON object."
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "Echoed JSON response",
+                    "value": {
+                      "message": "Hello, World!",
+                      "status": "success"
+                    }
+                  },
+                  "example2": {
+                    "summary": "Echoed complex JSON response",
+                    "value": {
+                      "user": {
+                        "id": 1,
+                        "name": "John Doe"
+                      },
+                      "items": [
+                        {
+                          "id": 101,
+                          "name": "Item 1"
+                        },
+                        {
+                          "id": 102,
+                          "name": "Item 2"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid JSON payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Error message describing the issue."
+                    }
+                  }
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "Invalid JSON response",
+                    "value": {
+                      "error": "Invalid JSON payload"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Echo"
+        ]
+      }
+    },
+    "/api/users/{user_id}": {
+      "get": {
+        "summary": "Retrieve User Information",
+        "description": "Fetches the details of a user by their unique user ID. The response includes the user's ID, name, and email address.",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "The unique identifier of the user to retrieve.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with user details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "The unique identifier of the user."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the user."
+                    },
+                    "email": {
+                      "type": "string",
+                      "description": "The email address of the user."
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "email"
+                  ]
+                },
+                "examples": {
+                  "example-1": {
+                    "summary": "Example user response",
+                    "value": {
+                      "id": 1,
+                      "name": "User 1",
+                      "email": "user1@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Error message indicating the user was not found."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                },
+                "examples": {
+                  "example-1": {
+                    "summary": "User not found response",
+                    "value": {
+                      "error": "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  }
+}
