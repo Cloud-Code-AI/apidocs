@@ -662,6 +662,26 @@ files = [
 ]
 
 [[package]]
+name = "environs"
+version = "11.0.0"
+description = "simplified environment variable parsing"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "environs-11.0.0-py3-none-any.whl", hash = "sha256:e0bcfd41c718c07a7db422f9109e490746450da38793fe4ee197f397b9343435"},
+    {file = "environs-11.0.0.tar.gz", hash = "sha256:069727a8f73d8ba8d033d3cd95c0da231d44f38f1da773bf076cef168d312ee8"},
+]
+
+[package.dependencies]
+marshmallow = ">=3.13.0"
+python-dotenv = "*"
+
+[package.extras]
+dev = ["environs[tests]", "pre-commit (>=3.5,<4.0)", "tox"]
+django = ["dj-database-url", "dj-email-url", "django-cache-url"]
+tests = ["environs[django]", "pytest"]
+
+[[package]]
 name = "escodegen"
 version = "1.0.11"
 description = "ECMAScript code generator"
@@ -726,6 +746,21 @@ typing-extensions = ">=4.8.0"
 
 [package.extras]
 all = ["email_validator (>=2.0.0)", "httpx (>=0.23.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=2.11.2)", "orjson (>=3.2.1)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.7)", "pyyaml (>=5.3.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0)", "uvicorn[standard] (>=0.12.0)"]
+
+[[package]]
+name = "fastapi-cors"
+version = "0.0.6"
+description = "Simple env support of CORS settings for Fastapi applications"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "fastapi-cors-0.0.6.tar.gz", hash = "sha256:17eeb92f2b3dd8f0deb8ca69f031760e35edd5a0c811aaf80f9743e5e6ae50a1"},
+    {file = "fastapi_cors-0.0.6-py3-none-any.whl", hash = "sha256:d116b482c682f9c5330f04b1c49a9d504f3a9df6373bc43dd6c31f3b9d0b8b15"},
+]
+
+[package.dependencies]
+environs = ">=9.5.0"
+fastapi = ">=0.99.1"
 
 [[package]]
 name = "filelock"
@@ -4438,4 +4473,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "ba93e5ba64fab6178a367865329d9969160468dd13bb30144dbd5f10dca91ba5"
+content-hash = "9db4b724a2f7f28619d0258534aa450f55ebddd4b7a2098ba6589f39b7bcc2bd"
