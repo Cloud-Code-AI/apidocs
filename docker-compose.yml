@@ -1,6 +1,6 @@
 version: '3'
 services:
-  app:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
@@ -14,7 +14,55 @@ services:
       - .env
     networks:
       - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - app-network
+
+
+  webserver:
+    image: nginx:mainline-alpine
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - frontend
+    volumes:
+      - custom_file:/var/www/html
+      - ./nginx-conf.dev:/etc/nginx/conf.d
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    depends_on:
+      - frontend
+    networks:
+      - app-network
   
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - custom_file:/var/www/html
+    depends_on:
+      - webserver
+    command: certonly --webroot --webroot-path=/var/www/html --email saurav.panda@cloudcode.ai --agree-tos --no-eff-email --keep-until-expiring -d akiradocs.com -d api.akiradocs.com
+
+volumes:
+  certbot-etc:
+  certbot-var:
+  custom_file:
+
 networks:
   app-network:
     driver: bridge
