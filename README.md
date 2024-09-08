@@ -11,6 +11,10 @@ Key features:
 - Easy integration with existing projects
 - Customizable output formats
 
+## Try It Out
+
+You can try AkiraDocs without installation by visiting our live demo at [https://akiradocs.com](https://akiradocs.com).
+
 ## Steps to Run
 
 Follow these steps to get AkiraDocs up and running using Docker:
